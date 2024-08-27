@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1051995644878",
+    "project_id": "homechefhub-f9445",
+    "storage_bucket": "homechefhub-f9445.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1051995644878:android:8f9e40e2de4f63ff59019f",
+        "android_client_info": {
+          "package_name": "com.example.home_chef_hub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe_r5rezUy-SUuzqUI-8DuuXXMrwCDogc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
