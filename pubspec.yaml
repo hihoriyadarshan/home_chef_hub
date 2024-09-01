@@ -41,6 +41,9 @@ dependencies:
   image_picker:
   file_picker:
   firebase_storage:
+  intl:
+  cloud_firestore:
+  firebase_analytics:
 
 dev_dependencies:
   flutter_test:
