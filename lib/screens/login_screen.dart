@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'home_screen.dart';
-import 'admin_screen.dart'; // Add AdminScreen
-import 'chef_screen.dart';  // Add ChefScreen
+import 'admin_screen.dart';
+import 'chef_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>(); // Form key for validation
+  final _formKey = GlobalKey<FormState>();
 
   void _signIn() async {
     if (_formKey.currentState!.validate()) {
@@ -29,14 +29,12 @@ class _LoginScreenState extends State<LoginScreen> {
           User? user = userCredential.user;
 
           if (user != null) {
-            // Retrieve the user's role from the database
             DatabaseReference userRef = _database.ref().child('users').child(user.uid);
             DataSnapshot snapshot = await userRef.get();
             Map<String, dynamic> userData = Map<String, dynamic>.from(snapshot.value as Map);
 
             String? role = userData['role'];
 
-            // Navigate based on role
             if (role == 'Admin') {
               Navigator.pushReplacement(
                 context,
@@ -50,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen()), // Navigate to HomeScreen for Users
+                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             }
           }
@@ -69,13 +67,12 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
-          child: Form( // Wrap with Form widget and assign the key
+          child: Form(
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 50),
-                // Logo
                 Container(
                   child: Image.asset(
                     'assets/chef_logo.png',
@@ -84,7 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-                // "SIGN IN" Text
                 Text(
                   'SIGN IN',
                   style: TextStyle(
@@ -94,7 +90,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 10),
-                // "Don't have an account? | Sign Up" Text
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -121,7 +116,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 SizedBox(height: 30),
-                // Email Input Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: TextFormField(
@@ -144,7 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-                // Password Input Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: TextFormField(
@@ -168,11 +161,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 30),
-                // "SIGN IN" Button
                 ElevatedButton(
                   onPressed: _signIn,
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.redAccent,
                     padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -187,7 +180,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-                // Forgot Password
                 GestureDetector(
                   onTap: () {
                     // Navigate to the Forgot Password page

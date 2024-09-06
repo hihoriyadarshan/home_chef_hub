@@ -5,6 +5,8 @@ import './screens/WelcomeScreen.dart';
 import './screens/login_screen.dart';
 import './screens/registration_screen.dart';
 import './screens/home_screen.dart';
+import './screens/chef_screen.dart';
+import './screens/admin_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +39,10 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => RegistrationScreen(),
         '/signin': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
+        '/chef': (context) => ChefScreen(),
+        '/Admin': (context) => AdminScreen(),
+
+
 
       },
     );

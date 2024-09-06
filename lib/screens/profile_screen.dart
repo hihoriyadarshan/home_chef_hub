@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../models/user_model.dart';
+import '../screens/ProfileUpdateScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -73,8 +74,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.edit, color: Colors.black),
-            onPressed: () {
-              // Add your edit action here
+            onPressed: () async {
+              bool? isUpdated = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileUpdateScreen(userModel: _userModel!),
+                ),
+              );
+              if (isUpdated == true) {
+                loadUserProfile();
+              }
             },
           ),
         ],

@@ -71,6 +71,10 @@ flutter:
     - assets/chef_logo.png
     - assets/google.png
     - assets/facebook.png
+    - assets/fast_food.png
+    - assets/local_dishes.png
+    - assets/intercontinental.png
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
