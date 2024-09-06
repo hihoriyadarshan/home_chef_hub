@@ -35,6 +35,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (!userData.containsKey('address')) {
             userData['address'] = 'No address provided';
           }
+          if (!userData.containsKey('profilePhotoUrl')) {
+            userData['profilePhotoUrl'] = null;
+          }
 
           setState(() {
             _userModel = UserModel.fromMap(userData);

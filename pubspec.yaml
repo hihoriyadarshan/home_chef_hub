@@ -44,6 +44,7 @@ dependencies:
   intl:
   cloud_firestore:
   firebase_analytics:
+  firebase_storage_web:
 
 dev_dependencies:
   flutter_test:
