@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import '../screens/login_screen.dart'; // Import your login screen
+import '../screens/profile_screen.dart';
 
 class ChefScreen extends StatelessWidget {
   @override
@@ -40,9 +41,16 @@ class ChefScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.person),
               title: Text('Profile'),
-              onTap: () {
-                // Navigate to Profile screen
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
               },
+                // Navigate to Profile screen
+
             ),
             ListTile(
               leading: Icon(Icons.settings),
