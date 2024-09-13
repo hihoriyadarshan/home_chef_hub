@@ -161,13 +161,23 @@ class _CategoryScreenState extends State<CategoryScreen> {
               // Category Image Picker
               GestureDetector(
                 onTap: _pickImage,
-                child: kIsWeb
-                    ? (_webImage == null
-                    ? Icon(Icons.add_a_photo, size: 50)
-                    : Image.network(html.Url.createObjectUrl(_webImage!), height: 100, width: 100, fit: BoxFit.cover))
-                    : (_categoryImage == null
-                    ? Icon(Icons.add_a_photo, size: 50)
-                    : Image.file(_categoryImage!, height: 100, width: 100, fit: BoxFit.cover)),
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xFF565458), width: 2), // Border color and width
+                    borderRadius: BorderRadius.circular(8), // Rounded corners
+                  ),
+                  child: Center(
+                    child: kIsWeb
+                        ? (_webImage == null
+                        ? Icon(Icons.add_a_photo, size: 50)
+                        : Image.network(html.Url.createObjectUrl(_webImage!), height: 100, width: 100, fit: BoxFit.cover))
+                        : (_categoryImage == null
+                        ? Icon(Icons.add_a_photo, size: 50)
+                        : Image.file(_categoryImage!, height: 100, width: 100, fit: BoxFit.cover)),
+                  ),
+                ),
               ),
 
               SizedBox(height: 20),
@@ -198,7 +208,15 @@ class _CategoryScreenState extends State<CategoryScreen> {
         labelText: labelText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
         ),
         filled: true,
         fillColor: Colors.white,

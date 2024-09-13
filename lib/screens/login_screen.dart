@@ -124,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelText: 'Email or username',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
                       ),
                       contentPadding: EdgeInsets.symmetric(horizontal: 20),
                     ),
@@ -147,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelText: 'Password',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
                       ),
                       contentPadding: EdgeInsets.symmetric(horizontal: 20),
                     ),
