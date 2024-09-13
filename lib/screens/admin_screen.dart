@@ -1,6 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import './admin_manage_users.dart'; // Import the AdminManageUsers screen
-import './admin_chef_manage.dart';  // Import the AdminChefManage screen
+import './admin_manage_users.dart';
+import './admin_chef_manage.dart';
+import './login_screen.dart';
+import './profile_screen.dart';
+import './category_screen.dart';
+
 
 class AdminScreen extends StatelessWidget {
   @override
@@ -12,12 +17,69 @@ class AdminScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed: () {
-              // Handle logout action
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut(); // Sign out from Firebase
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => LoginScreen()), // Navigate to login screen
+              );
             },
           ),
         ],
       ),
+
+
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Navigate to Settings screen
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () async {
+                await FirebaseAuth.instance.signOut(); // Sign out from Firebase
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginScreen()), // Navigate to login screen
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -76,10 +138,16 @@ class AdminScreen extends StatelessWidget {
                   ),
                   _buildDashboardItem(
                     context,
-                    title: 'Settings',
-                    icon: Icons.settings,
+                    title: 'Food Category',
+                    icon: Icons.fastfood,
                     onTap: () {
                       // Navigate to Settings page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CategoryScreen(),
+                        ),
+                      );
                     },
                   ),
                 ],
