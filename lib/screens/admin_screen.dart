@@ -5,7 +5,9 @@ import './admin_chef_manage.dart';
 import './login_screen.dart';
 import './profile_screen.dart';
 import './category_screen.dart';
-
+import './sub-category_screen.dart';
+import './manage-category_screen.dart';
+import './manage-subcategory_screen.dart';
 
 class AdminScreen extends StatelessWidget {
   @override
@@ -96,7 +98,7 @@ class AdminScreen extends StatelessWidget {
             SizedBox(height: 20),
             Expanded(
               child: GridView.count(
-                crossAxisCount: 2,
+                crossAxisCount: 4,
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
                 children: [
@@ -136,6 +138,7 @@ class AdminScreen extends StatelessWidget {
                       // Navigate to Reports page
                     },
                   ),
+
                   _buildDashboardItem(
                     context,
                     title: 'Food Category',
@@ -150,6 +153,52 @@ class AdminScreen extends StatelessWidget {
                       );
                     },
                   ),
+
+                  _buildDashboardItem(
+                    context,
+                    title: 'Sub-Category',
+                    icon: Icons.analytics,
+                    onTap: () {
+                      // Navigate to Reports page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SubCategoryScreen(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _buildDashboardItem(
+                    context,
+                    title: 'Manage Category',
+                    icon: Icons.analytics,
+                    onTap: () {
+                      // Navigate to Reports page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ManageCategoryScreen(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _buildDashboardItem(
+                    context,
+                    title: 'Manage Sub-Category',
+                    icon: Icons.analytics,
+                    onTap: () {
+                      // Navigate to Reports page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ManageSubCategoryScreen(),
+                        ),
+                      );
+                    },
+                  ),
+
                 ],
               ),
             ),
