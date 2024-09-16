@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import '../models/user_model.dart';
 import 'home_screen.dart';
+import 'verify_email_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -24,11 +25,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();  // Form key for validation
+  final _formKey = GlobalKey<FormState>();
 
   File? _profileImage;
   html.File? _webImage;
-
   String? _selectedRole;
 
   Future<void> _pickImage() async {
@@ -48,7 +48,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         });
       });
     } else {
-      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80, // Compress the image
+      );
       if (pickedFile != null) {
         setState(() {
           _profileImage = File(pickedFile.path);
@@ -59,8 +63,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<String?> _uploadImage(String uid) async {
     try {
-      final storageRef = FirebaseStorage.instance.ref().child('profile_photos').child('$uid.jpg');
-
+      final storageRef =
+      FirebaseStorage.instance.ref().child('profile_photos').child('$uid.jpg');
       if (kIsWeb && _webImage != null) {
         final uploadTask = storageRef.putBlob(_webImage!);
         final snapshot = await uploadTask.whenComplete(() {});
@@ -80,7 +84,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void registerUser() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
@@ -102,9 +107,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
           await _database.ref().child('users').child(user.uid).set(userModel.toMap());
 
+          // Send email verification
+          await user.sendEmailVerification();
+
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => VerifyEmailScreen()), // Redirect to verification screen
           );
         }
       } catch (e) {
@@ -115,27 +123,74 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
+  Widget _buildImagePicker() {
+    return Stack(
+      children: [
+        // Profile Image
+        CircleAvatar(
+          radius: 60,
+          backgroundColor: Colors.grey[200],
+          backgroundImage: _getImageProvider(),
+          child: _getImageProvider() == null
+              ? Icon(
+            Icons.person,
+            size: 60,
+            color: Colors.grey[400],
+          )
+              : null,
+        ),
+        // Edit Icon
+        Positioned(
+          bottom: 0,
+          right: 4,
+          child: GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
+              ),
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  ImageProvider? _getImageProvider() {
+    if (kIsWeb && _webImage != null) {
+      return NetworkImage(html.Url.createObjectUrlFromBlob(_webImage!));
+    } else if (!kIsWeb && _profileImage != null) {
+      return FileImage(_profileImage!);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      // Optionally, you can add an AppBar here
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
-            key: _formKey,  // Wrap with Form widget and assign the key
+            key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 40),
-                // Logo
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/chef_logo.png'),
-                ),
+                _buildImagePicker(),
                 SizedBox(height: 20),
-
-                // Sign Up Text
                 Text(
                   'SIGN UP',
                   style: TextStyle(
@@ -144,8 +199,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                 ),
                 SizedBox(height: 10),
-
-                // Already have an account and Login button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -154,13 +207,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: Text('Login', style: TextStyle(color: Colors.red, fontSize: 16)),
+                      child: Text('Login',
+                          style: TextStyle(color: Colors.red, fontSize: 16)),
                     ),
                   ],
                 ),
                 SizedBox(height: 20),
-
-                // Input Fields with validation
                 _buildTextField(_usernameController, 'Username', validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a username';
@@ -169,28 +221,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 }),
                 SizedBox(height: 20),
                 _buildTextField(_emailController, 'Email', validator: (value) {
-                  if (value == null || value.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                  if (value == null || value.isEmpty ||
+                      !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                     return 'Please enter a valid email';
                   }
                   return null;
                 }),
                 SizedBox(height: 20),
-                _buildTextField(_passwordController, 'Password', obscureText: true, validator: (value) {
-                  if (value == null || value.isEmpty || value.length < 6) {
-                    return 'Password must be at least 6 characters long';
-                  }
-                  return null;
-                }),
+                _buildTextField(_passwordController, 'Password',
+                    obscureText: true, validator: (value) {
+                      if (value == null || value.isEmpty || value.length < 6) {
+                        return 'Password must be at least 6 characters long';
+                      }
+                      return null;
+                    }),
                 SizedBox(height: 20),
-                _buildTextField(_dobController, 'Date of Birth (dd/MM/yyyy)', validator: (value) {
-                  if (value == null || value.isEmpty || !RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
-                    return 'Please enter a valid date (dd/MM/yyyy)';
-                  }
-                  return null;
-                }),
+                _buildTextField(_dobController, 'Date of Birth (dd/MM/yyyy)',
+                    validator: (value) {
+                      if (value == null || value.isEmpty ||
+                          !RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
+                        return 'Please enter a valid date (dd/MM/yyyy)';
+                      }
+                      return null;
+                    }),
                 SizedBox(height: 20),
                 _buildTextField(_phoneController, 'Phone Number', validator: (value) {
-                  if (value == null || value.isEmpty || !RegExp(r'^\d+$').hasMatch(value)) {
+                  if (value == null || value.isEmpty ||
+                      !RegExp(r'^\d+$').hasMatch(value)) {
                     return 'Please enter a valid phone number';
                   }
                   return null;
@@ -198,22 +255,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 SizedBox(height: 20),
                 _buildTextField(_addressController, 'Address', validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an address';
+                    return 'Please enter your address';
                   }
                   return null;
                 }),
-                SizedBox(height: 20),
-
-                // Role Dropdown
+                SizedBox(height: 30),
                 DropdownButtonFormField<String>(
                   value: _selectedRole,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedRole = newValue;
-                    });
-                  },
-    // items: ['User', 'Chef', 'Admin'].map((role) {
-
                   items: ['User', 'Chef'].map((role) {
                     return DropdownMenuItem(
                       value: role,
@@ -222,74 +270,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   }).toList(),
                   decoration: InputDecoration(
                     labelText: 'Select Role',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
                   ),
+                  hint: Text('Select Role'),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedRole = value;
+                    });
+                  },
                   validator: (value) {
-                    if (value == null) {
+                    if (value == null || value.isEmpty) {
                       return 'Please select a role';
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
-
-                // Profile Image Picker
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFF565458), width: 2), // Border color and width
-                      borderRadius: BorderRadius.circular(8), // Rounded corners
-                    ),
-                    child: Center(
-                      child: kIsWeb
-                          ? (_webImage == null
-                          ? Icon(Icons.add_a_photo, size: 50)
-                          : Image.network(html.Url.createObjectUrl(_webImage!), height: 100, width: 100, fit: BoxFit.cover))
-                          : (_profileImage == null
-                          ? Icon(Icons.add_a_photo, size: 50)
-                          : Image.file(_profileImage!, height: 100, width: 100, fit: BoxFit.cover)),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 20),
-
-                // Social Media Login
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {}, // Handle Google login
-                      icon: Image.asset('assets/google.png', width: 55, height: 55),
-                    ),
-                    IconButton(
-                      onPressed: () {}, // Handle Facebook login
-                      icon: Image.asset('assets/facebook.png', width: 55, height: 55),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-
-                // Register Button
+                SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: registerUser,
-                  child: Text('Register'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                    minimumSize: Size(double.infinity, 50),
+                  ),
+                  child: Text(
+                    'Sign Up',
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
+                SizedBox(height: 20),
               ],
             ),
           ),
@@ -298,19 +306,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String labelText, {bool obscureText = false, String? Function(String?)? validator}) {
+  Widget _buildTextField(TextEditingController controller, String labelText,
+      {bool obscureText = false, String? Function(String?)? validator}) {
     return TextFormField(
       controller: controller,
-      obscureText: obscureText,
       decoration: InputDecoration(
         labelText: labelText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
-        ),
-        filled: true,
-        fillColor: Colors.white,
+        border: OutlineInputBorder(),
       ),
+      obscureText: obscureText,
       validator: validator,
     );
   }

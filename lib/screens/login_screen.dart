@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'home_screen.dart';
 import 'admin_screen.dart';
 import 'chef_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -184,6 +185,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ForgotPasswordScreen(),
+                      ),
+                    );
+
                     // Navigate to the Forgot Password page
                   },
                   child: Text(

@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../models/sub-category_model.dart';
+import '../models/category_model.dart'; // Import CategoryModel
 
 class ManageSubCategoryScreen extends StatefulWidget {
   @override
@@ -15,11 +16,30 @@ class ManageSubCategoryScreen extends StatefulWidget {
 class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   List<SubCategoryModel> _subCategories = [];
+  Map<String, String> _categoryIdToNameMap = {}; // Map to store categoryId -> categoryName
+  List<CategoryModel> _categories = []; // List of categories for the dropdown
 
   @override
   void initState() {
     super.initState();
-    _fetchSubCategories();
+    _fetchCategoriesAndSubCategories();
+  }
+
+  Future<void> _fetchCategoriesAndSubCategories() async {
+    await _fetchCategories(); // Fetch categories first
+    await _fetchSubCategories(); // Then fetch subcategories
+  }
+
+  Future<void> _fetchCategories() async {
+    final snapshot = await _database.ref().child('categories').once();
+    final data = snapshot.snapshot.value as Map<dynamic, dynamic>?;
+
+    if (data != null) {
+      setState(() {
+        _categories = data.values.map((value) => CategoryModel.fromMap(Map<String, dynamic>.from(value))).toList();
+        _categoryIdToNameMap = _categories.asMap().map((_, category) => MapEntry(category.cid, category.category));
+      });
+    }
   }
 
   Future<void> _fetchSubCategories() async {
@@ -49,6 +69,7 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
       builder: (context) {
         return UpdateSubCategoryForm(
           subCategory: subCategory,
+          categories: _categories, // Pass categories for dropdown
           onUpdate: _fetchSubCategories, // Refresh after update
         );
       },
@@ -66,13 +87,15 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
         itemCount: _subCategories.length,
         itemBuilder: (context, index) {
           final subCategory = _subCategories[index];
+          final categoryName = _categoryIdToNameMap[subCategory.categoryId] ?? 'Unknown Category'; // Get category name
+
           return Card(
             child: ListTile(
               leading: subCategory.subCategoryPhotoUrl != null
                   ? Image.network(subCategory.subCategoryPhotoUrl!, width: 50, height: 50, fit: BoxFit.cover)
                   : SizedBox(width: 50, height: 50), // Placeholder if no photo
               title: Text(subCategory.subCategory),
-              subtitle: Text('Category ID: ${subCategory.categoryId}'),
+              subtitle: Text('Category: $categoryName'), // Show category name instead of ID
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -96,9 +119,10 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
 
 class UpdateSubCategoryForm extends StatefulWidget {
   final SubCategoryModel subCategory;
+  final List<CategoryModel> categories; // List of categories for dropdown
   final VoidCallback onUpdate;
 
-  UpdateSubCategoryForm({required this.subCategory, required this.onUpdate});
+  UpdateSubCategoryForm({required this.subCategory, required this.categories, required this.onUpdate});
 
   @override
   _UpdateSubCategoryFormState createState() => _UpdateSubCategoryFormState();
@@ -106,16 +130,17 @@ class UpdateSubCategoryForm extends StatefulWidget {
 
 class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
   final TextEditingController _subCategoryNameController = TextEditingController();
+  String? _selectedCategoryId;
   File? _subcategoryImage;
   html.File? _webImage;
 
-  // Define FirebaseStorage instance
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   @override
   void initState() {
     super.initState();
     _subCategoryNameController.text = widget.subCategory.subCategory;
+    _selectedCategoryId = widget.subCategory.categoryId; // Set initial selected category
   }
 
   Future<void> _pickImage() async {
@@ -167,8 +192,8 @@ class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
 
   Future<void> _updateSubCategory() async {
     final subCategoryName = _subCategoryNameController.text.trim();
-    if (subCategoryName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Subcategory name cannot be empty')));
+    if (subCategoryName.isEmpty || _selectedCategoryId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Subcategory name and category cannot be empty')));
       return;
     }
 
@@ -178,7 +203,7 @@ class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
       SubCategoryModel updatedSubCategory = SubCategoryModel(
         scid: widget.subCategory.scid,
         subCategory: subCategoryName,
-        categoryId: widget.subCategory.categoryId,
+        categoryId: _selectedCategoryId!, // Updated category
         subCategoryPhotoUrl: subCategoryPhotoUrl,
       );
 
@@ -207,6 +232,22 @@ class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
               decoration: InputDecoration(labelText: 'Sub-Category Name'),
             ),
             SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value: _selectedCategoryId,
+              decoration: InputDecoration(labelText: 'Category'),
+              items: widget.categories.map((category) {
+                return DropdownMenuItem<String>(
+                  value: category.cid,
+                  child: Text(category.category),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategoryId = value;
+                });
+              },
+            ),
+            SizedBox(height: 20),
             GestureDetector(
               onTap: _pickImage,
               child: Container(
@@ -216,15 +257,13 @@ class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Center(
-                  child: kIsWeb
-                      ? (_webImage == null
-                      ? Icon(Icons.add_a_photo, size: 50)
-                      : Image.network(html.Url.createObjectUrl(_webImage!), height: 100, width: 100, fit: BoxFit.cover))
-                      : (_subcategoryImage == null
-                      ? Icon(Icons.add_a_photo, size: 50)
-                      : Image.file(_subcategoryImage!, height: 100, width: 100, fit: BoxFit.cover)),
-                ),
+                child: _subcategoryImage != null || _webImage != null
+                    ? (kIsWeb
+                    ? Image.network(html.Url.createObjectUrl(_webImage!))
+                    : Image.file(_subcategoryImage!, fit: BoxFit.cover))
+                    : widget.subCategory.subCategoryPhotoUrl != null
+                    ? Image.network(widget.subCategory.subCategoryPhotoUrl!, fit: BoxFit.cover)
+                    : Icon(Icons.add_a_photo),
               ),
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override
@@ -10,11 +11,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseDatabase _database = FirebaseDatabase.instance;  // Firebase Realtime Database instance
 
   void _resetPassword() async {
     if (_formKey.currentState!.validate()) {
       try {
+        // Send password reset email
         await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+
+        // Log password reset request in Firebase Realtime Database
+        String userEmail = _emailController.text.trim();
+        DatabaseReference passwordResetRef = _database.ref().child('password_resets').push();
+        await passwordResetRef.set({
+          'email': userEmail,
+          'timestamp': DateTime.now().toString(),
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Password reset link sent to your email.')),
         );
