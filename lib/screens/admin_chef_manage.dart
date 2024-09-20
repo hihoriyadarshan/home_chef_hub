@@ -58,24 +58,75 @@ class _AdminChefManageState extends State<AdminChefManage> {
           ? Center(child: CircularProgressIndicator())
           : _chefs.isEmpty
           ? Center(child: Text('No chefs found'))
-          : ListView.builder(
-        itemCount: _chefs.length,
-        itemBuilder: (context, index) {
-          UserModel chef = _chefs[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: chef.profilePhotoUrl != null
-                  ? NetworkImage(chef.profilePhotoUrl!)
-                  : AssetImage('assets/placeholder.png') as ImageProvider,
-            ),
-            title: Text(chef.username),
-            subtitle: Text(chef.email),
-            onTap: () {
-              // Handle tap, e.g., navigate to chef details
-            },
-          );
-        },
+          : Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal, // Scroll horizontally if table overflows
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildChefTable(), // Table with chef data
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildChefTable() {
+    return DataTable(
+      columns: [
+        DataColumn(label: Text('Profile Photo', style: TextStyle(fontWeight: FontWeight.bold))),
+        DataColumn(label: Text('Username', style: TextStyle(fontWeight: FontWeight.bold))),
+        DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
+        DataColumn(label: Text('Phone', style: TextStyle(fontWeight: FontWeight.bold))),
+        DataColumn(label: Text('Actions', style: TextStyle(fontWeight: FontWeight.bold))),
+      ],
+      rows: _chefs
+          .asMap()
+          .entries
+          .map(
+            (entry) => DataRow(
+          color: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                return entry.key % 2 == 0
+                    ? Colors.grey[200] // Alternating row colors
+                    : Colors.white;
+              }),
+          cells: [
+            DataCell(CircleAvatar(
+              backgroundImage: entry.value.profilePhotoUrl != null
+                  ? NetworkImage(entry.value.profilePhotoUrl!)
+                  : AssetImage('assets/placeholder.png') as ImageProvider,
+            )),
+            DataCell(Text(entry.value.username)),
+            DataCell(Text(entry.value.email)),
+            DataCell(Text(entry.value.phone)),
+            DataCell(
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // Add enable logic here
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    child: Text('Enable'),
+                  ),
+                  SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Add disable logic here
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: Text('Disable'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      )
+          .toList(),
     );
   }
 }

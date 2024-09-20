@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/user_model.dart';
 
 class AdminManageUsers extends StatefulWidget {
@@ -43,6 +44,20 @@ class _AdminManageUsersState extends State<AdminManageUsers> {
     }
   }
 
+  // Function to open email app
+  Future<void> _launchEmail(String email) async {
+    final Uri params = Uri(
+      scheme: 'mailto',
+      path: email,
+    );
+    String url = params.toString();
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,23 +69,85 @@ class _AdminManageUsersState extends State<AdminManageUsers> {
           ? Center(child: CircularProgressIndicator())
           : _users.isEmpty
           ? Center(child: Text('No users found with role "User".'))
-          : ListView.builder(
-        itemCount: _users.length,
-        itemBuilder: (context, index) {
-          final user = _users[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: user.profilePhotoUrl != null
-                  ? NetworkImage(user.profilePhotoUrl!)
-                  : AssetImage('assets/default_profile.png') as ImageProvider,
-            ),
-            title: Text(user.username),
-            subtitle: Text(user.email),
-            onTap: () {
-              // You can add more details or actions for each user here
-            },
-          );
-        },
+          : Padding(
+        padding: const EdgeInsets.all(16.0),  // Add padding around the table
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(height: 20),  // Add space above the table
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(label: Text('Profile')),
+                    DataColumn(label: Text('Username')),
+                    DataColumn(label: Text('Email')),
+                    DataColumn(label: Text('Phone')),
+                    DataColumn(label: Text('Address')),
+                    DataColumn(label: Text('Enable/Disable')), // Add buttons header
+                  ],
+                  rows: _users.map((user) {
+                    return DataRow(
+                      cells: [
+                        DataCell(
+                          CircleAvatar(
+                            backgroundImage: user.profilePhotoUrl != null
+                                ? NetworkImage(user.profilePhotoUrl!)
+                                : AssetImage('default_profile.png') as ImageProvider,
+                          ),
+                        ),
+                        DataCell(Text(user.username)),
+                        DataCell(
+                          GestureDetector(
+                            onTap: () {
+                              _launchEmail(user.email);
+                            },
+                            child: Text(
+                              user.email,
+                              style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ),
+                        DataCell(Text(user.phone)),
+                        DataCell(Text(user.address)),
+                        DataCell(
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Add functionality to enable the user
+                                  print('Enabled ${user.username}');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white, backgroundColor: Colors.green, // Text color
+                                ),
+                                child: Text('Enable'),
+                              ),
+                              SizedBox(width: 8),  // Add space between buttons
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Add functionality to disable the user
+                                  print('Disabled ${user.username}');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white, backgroundColor: Colors.red, // Text color
+                                ),
+                                child: Text('Disable'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -178,38 +178,48 @@ class _ManageCategoryScreenState extends State<ManageCategoryScreen> {
             return CategoryModel.fromMap(categoryData);
           }).toList();
 
-          return ListView.builder(
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              CategoryModel category = categories[index];
-              return ListTile(
-                leading: category.categoryPhotoUrl != null
-                    ? Image.network(category.categoryPhotoUrl!,
-                    width: 50, height: 50, fit: BoxFit.cover)
-                    : Icon(Icons.image),
-                title: Text(category.category),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () => _updateCategory(category),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        bool? confirmDelete = await _showDeleteConfirmDialog();
-                        if (confirmDelete == true) {
-                          _deleteCategory(category.cid);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
+          return _buildDataTable(categories);
         },
+      ),
+    );
+  }
+
+  // Method to build the DataTable
+  Widget _buildDataTable(List<CategoryModel> categories) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columns: [
+          DataColumn(label: Text('Image')),
+          DataColumn(label: Text('Category Name')),
+          DataColumn(label: Text('Edit')),
+          DataColumn(label: Text('Delete')),
+        ],
+        rows: categories.map((category) {
+          return DataRow(cells: [
+            DataCell(category.categoryPhotoUrl != null
+                ? Image.network(category.categoryPhotoUrl!, width: 50, height: 50, fit: BoxFit.cover)
+                : Icon(Icons.image)),
+            DataCell(Text(category.category)),
+            DataCell(
+              IconButton(
+                icon: Icon(Icons.edit, color: Colors.blue),
+                onPressed: () => _updateCategory(category),
+              ),
+            ),
+            DataCell(
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () async {
+                  bool? confirmDelete = await _showDeleteConfirmDialog();
+                  if (confirmDelete == true) {
+                    _deleteCategory(category.cid);
+                  }
+                },
+              ),
+            ),
+          ]);
+        }).toList(),
       ),
     );
   }

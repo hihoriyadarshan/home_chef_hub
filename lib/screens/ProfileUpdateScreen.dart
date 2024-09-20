@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'dart:typed_data'; // For web usage, where dart:io is not available
+import 'dart:io' if (dart.library.html) 'dart:html'; // Conditional import for web
 import '../models/user_model.dart';
 import 'profile_screen.dart';
 
@@ -18,12 +21,15 @@ class ProfileUpdateScreen extends StatefulWidget {
 class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance; // Initialize Firebase Storage
   final _formKey = GlobalKey<FormState>();
-  File? _image;
+  XFile? _image; // Change to XFile for web compatibility
+  Uint8List? _imageBytes; // Bytes for web upload
   late String _username;
   late String _phone;
   late String _dob;
   late String _address;
+  bool _isUploading = false; // State to manage image uploading
 
   @override
   void initState() {
@@ -38,9 +44,55 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        _image = pickedFile;
       });
+
+      if (kIsWeb) {
+        // For web, read bytes directly
+        _imageBytes = await pickedFile.readAsBytes();
+      }
     }
+  }
+
+  Future<String?> _uploadImageToStorage() async {
+    if (_image != null) {
+      try {
+        setState(() {
+          _isUploading = true;
+        });
+
+        // Create a reference to Firebase Storage
+        String fileName = _auth.currentUser!.uid + "_profile_image";
+        Reference ref = _storage.ref().child("profile_images/$fileName");
+
+        if (kIsWeb) {
+          // For web, upload the bytes
+          UploadTask uploadTask = ref.putData(_imageBytes!);
+          TaskSnapshot snapshot = await uploadTask;
+
+          // Get the download URL of the uploaded image
+          String downloadUrl = await snapshot.ref.getDownloadURL();
+          return downloadUrl;
+        } else {
+          // For mobile, upload the file directly
+          File imageFile = File(_image!.path); // Convert XFile to File for mobile
+          UploadTask uploadTask = ref.putFile(imageFile);
+          TaskSnapshot snapshot = await uploadTask;
+
+          // Get the download URL of the uploaded image
+          String downloadUrl = await snapshot.ref.getDownloadURL();
+          return downloadUrl;
+        }
+      } catch (e) {
+        print('Error uploading image: $e');
+        return null;
+      } finally {
+        setState(() {
+          _isUploading = false;
+        });
+      }
+    }
+    return null;
   }
 
   Future<void> _updateProfile() async {
@@ -58,12 +110,14 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
           'address': _address,
         };
 
-        // Upload new profile image if selected
+        // Upload new profile image if selected and update profilePhotoUrl
         if (_image != null) {
-          // Here, you would upload the image to Firebase Storage and get the URL
-          // For simplicity, we assume the image URL is "new_image_url"
-          String newImageUrl = "new_image_url"; // Replace this with actual upload logic
-          updateData['profilePhotoUrl'] = newImageUrl;
+          String? newImageUrl = await _uploadImageToStorage();
+          if (newImageUrl != null) {
+            updateData['profilePhotoUrl'] = newImageUrl;
+          } else {
+            print('Image upload failed');
+          }
         }
 
         await userRef.update(updateData);
@@ -84,7 +138,9 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: _isUploading
+          ? Center(child: CircularProgressIndicator()) // Show loader while uploading image
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -110,7 +166,9 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                             child: CircleAvatar(
                               radius: 50,
                               backgroundImage: _image != null
-                                  ? FileImage(_image!)
+                                  ? (kIsWeb
+                                  ? MemoryImage(_imageBytes!)
+                                  : FileImage(File(_image!.path))) // For web/mobile
                                   : widget.userModel.profilePhotoUrl != null
                                   ? NetworkImage(widget.userModel.profilePhotoUrl!)
                                   : AssetImage('assets/default_avatar.png') as ImageProvider,

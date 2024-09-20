@@ -46,6 +46,7 @@ dependencies:
   firebase_analytics:
   firebase_storage_web:
   font_awesome_flutter:
+  url_launcher:
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +74,7 @@ flutter:
     - assets/chef_logo.png
     - assets/google.png
     - assets/facebook.png
+    - assets/default_profile.png
     - assets/fast_food.png
     - assets/local_dishes.png
     - assets/intercontinental.png

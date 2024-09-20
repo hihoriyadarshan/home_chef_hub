@@ -46,6 +46,114 @@ class AdminScreen extends StatelessWidget {
                 ),
               ),
             ),
+
+            ListTile(
+              leading: Icon(Icons.analytics),
+              title: Text('DashBoard'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AdminScreen()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+
+            ListTile(
+              leading: Icon(Icons.people),
+              title: Text('Manage user'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AdminManageUsers()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+
+
+
+            ListTile(
+              leading: Icon(Icons.restaurant_menu),
+              title: Text('Manage Chef'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AdminChefManage()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+
+            ListTile(
+              leading: Icon(Icons.fastfood),
+              title: Text('Create Category'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CategoryScreen()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+
+            ListTile(
+              leading: Icon(Icons.fastfood),
+              title: Text('Create Sub-Category'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SubCategoryScreen()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+
+            ListTile(
+              leading: Icon(Icons.fastfood),
+              title: Text('Manage Category'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ManageCategoryScreen()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+
+            ListTile(
+              leading: Icon(Icons.fastfood),
+              title: Text('Manage Sub-Category'),
+              onTap: ()
+              {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ManageSubCategoryScreen()),
+                );
+              },
+              // Navigate to Profile screen
+
+            ),
+
             ListTile(
               leading: Icon(Icons.person),
               title: Text('Profile'),
@@ -102,6 +210,19 @@ class AdminScreen extends StatelessWidget {
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
                 children: [
+
+                  _buildDashboardItem(
+                    context,
+                    title: 'View Reports',
+                    icon: Icons.analytics,
+                    onTap: () {
+                      // Navigate to Reports page
+                    },
+                  ),
+
+
+
+
                   _buildDashboardItem(
                     context,
                     title: 'Manage Users',
@@ -130,18 +251,11 @@ class AdminScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  _buildDashboardItem(
-                    context,
-                    title: 'View Reports',
-                    icon: Icons.analytics,
-                    onTap: () {
-                      // Navigate to Reports page
-                    },
-                  ),
+
 
                   _buildDashboardItem(
                     context,
-                    title: 'Food Category',
+                    title: 'Create Category',
                     icon: Icons.fastfood,
                     onTap: () {
                       // Navigate to Settings page
@@ -156,8 +270,8 @@ class AdminScreen extends StatelessWidget {
 
                   _buildDashboardItem(
                     context,
-                    title: 'Sub-Category',
-                    icon: Icons.analytics,
+                    title: 'Create Sub-Category',
+                    icon: Icons.fastfood,
                     onTap: () {
                       // Navigate to Reports page
                       Navigator.push(

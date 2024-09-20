@@ -114,14 +114,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(height: 50), // Adjusted for wave effect
                       CircleAvatar(
                         radius: 50,
-                        backgroundImage: _userModel?.profilePhotoUrl != null
-                            ? NetworkImage(_userModel!.profilePhotoUrl!)
-                            : AssetImage('assets/default_avatar.png') as ImageProvider,
-                        onBackgroundImageError: (_, __) {
-                          setState(() {
-                            _errorMessage = 'Failed to load profile image';
-                          });
-                        },
+                        backgroundColor: Colors.grey.shade300,
+                        child: ClipOval(
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/default_profile.png', // Fallback asset image
+                            image: _userModel?.profilePhotoUrl ?? '',
+                            imageErrorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/default_profile.png', // Fallback in case of image load error
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 100,
+                              );
+                            },
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                          ),
+                        ),
                       ),
                       SizedBox(height: 10),
                       Text(

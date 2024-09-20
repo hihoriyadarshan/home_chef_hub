@@ -10,7 +10,8 @@ import '../models/category_model.dart'; // Import CategoryModel
 
 class ManageSubCategoryScreen extends StatefulWidget {
   @override
-  _ManageSubCategoryScreenState createState() => _ManageSubCategoryScreenState();
+  _ManageSubCategoryScreenState createState() =>
+      _ManageSubCategoryScreenState();
 }
 
 class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
@@ -36,7 +37,9 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
 
     if (data != null) {
       setState(() {
-        _categories = data.values.map((value) => CategoryModel.fromMap(Map<String, dynamic>.from(value))).toList();
+        _categories = data.values
+            .map((value) => CategoryModel.fromMap(Map<String, dynamic>.from(value)))
+            .toList();
         _categoryIdToNameMap = _categories.asMap().map((_, category) => MapEntry(category.cid, category.category));
       });
     }
@@ -48,7 +51,9 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
 
     if (data != null) {
       setState(() {
-        _subCategories = data.values.map((value) => SubCategoryModel.fromMap(Map<String, dynamic>.from(value))).toList();
+        _subCategories = data.values
+            .map((value) => SubCategoryModel.fromMap(Map<String, dynamic>.from(value)))
+            .toList();
       });
     }
   }
@@ -56,10 +61,12 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
   Future<void> _deleteSubCategory(String scid) async {
     try {
       await _database.ref().child('subcategories').child(scid).remove();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Subcategory deleted successfully')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Subcategory deleted successfully')));
       _fetchSubCategories(); // Refresh the list
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -83,21 +90,33 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
         title: Text('Manage Subcategories'),
         backgroundColor: Colors.red,
       ),
-      body: ListView.builder(
-        itemCount: _subCategories.length,
-        itemBuilder: (context, index) {
-          final subCategory = _subCategories[index];
-          final categoryName = _categoryIdToNameMap[subCategory.categoryId] ?? 'Unknown Category'; // Get category name
+      body: _buildSubCategoryTable(),
+    );
+  }
 
-          return Card(
-            child: ListTile(
-              leading: subCategory.subCategoryPhotoUrl != null
+  Widget _buildSubCategoryTable() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: DataTable(
+        columns: [
+          DataColumn(label: Text('Subcategory Name')),
+          DataColumn(label: Text('Category')),
+          DataColumn(label: Text('Image')),
+          DataColumn(label: Text('Actions')),
+        ],
+        rows: _subCategories.map((subCategory) {
+          final categoryName = _categoryIdToNameMap[subCategory.categoryId] ?? 'Unknown Category';
+
+          return DataRow(cells: [
+            DataCell(Text(subCategory.subCategory)),
+            DataCell(Text(categoryName)),
+            DataCell(
+              subCategory.subCategoryPhotoUrl != null
                   ? Image.network(subCategory.subCategoryPhotoUrl!, width: 50, height: 50, fit: BoxFit.cover)
                   : SizedBox(width: 50, height: 50), // Placeholder if no photo
-              title: Text(subCategory.subCategory),
-              subtitle: Text('Category: $categoryName'), // Show category name instead of ID
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
+            ),
+            DataCell(
+              Row(
                 children: [
                   IconButton(
                     icon: Icon(Icons.edit),
@@ -110,8 +129,8 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
                 ],
               ),
             ),
-          );
-        },
+          ]);
+        }).toList(),
       ),
     );
   }
@@ -122,7 +141,11 @@ class UpdateSubCategoryForm extends StatefulWidget {
   final List<CategoryModel> categories; // List of categories for dropdown
   final VoidCallback onUpdate;
 
-  UpdateSubCategoryForm({required this.subCategory, required this.categories, required this.onUpdate});
+  UpdateSubCategoryForm({
+    required this.subCategory,
+    required this.categories,
+    required this.onUpdate,
+  });
 
   @override
   _UpdateSubCategoryFormState createState() => _UpdateSubCategoryFormState();
