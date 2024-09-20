@@ -76,6 +76,10 @@ flutter:
     - assets/fast_food.png
     - assets/local_dishes.png
     - assets/intercontinental.png
+    - assets/chef_cooking.png
+    - assets/slicer1.png
+    - assets/slicer2.png
+    - assets/slicer3.png
 
 
   # To add assets to your application, add an assets section, like this:

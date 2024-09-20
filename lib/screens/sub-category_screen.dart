@@ -143,7 +143,25 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 40),
+
+              //Logo
+
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('assets/chef_logo.png'),
+              ),
               SizedBox(height: 20),
+
+              Text(
+                'CREATE SUB-CATEGORY',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+
 
               // Category Dropdown with Photo
               DropdownButton<CategoryModel>(
