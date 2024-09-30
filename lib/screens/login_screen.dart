@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'home_screen.dart';
-import 'admin_screen.dart';
-import 'chef_screen.dart';
-import 'forgot_password_screen.dart';
+import 'user/home_screen.dart';
+import 'Admin/admin_screen.dart';
+import 'Chef_Screen/chef_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -30,26 +29,43 @@ class _LoginScreenState extends State<LoginScreen> {
           User? user = userCredential.user;
 
           if (user != null) {
+            // Fetch user data from Firebase Realtime Database
             DatabaseReference userRef = _database.ref().child('users').child(user.uid);
             DataSnapshot snapshot = await userRef.get();
-            Map<String, dynamic> userData = Map<String, dynamic>.from(snapshot.value as Map);
 
-            String? role = userData['role'];
+            if (snapshot.exists) {
+              Map<String, dynamic> userData = Map<String, dynamic>.from(snapshot.value as Map);
 
-            if (role == 'Admin') {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => AdminScreen()),
-              );
-            } else if (role == 'Chef') {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => ChefScreen()),
-              );
+              String? role = userData['role'];
+              String? status = userData['status'];
+
+              // Check the status of the user
+              if (status == 'suspended') {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Your account has been suspended. Please contact admin.')),
+                );
+                return; // Prevent login if the account is suspended
+              }
+
+              if (status == 'disabled') {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Your account has been disabled. Please contact admin.')),
+                );
+                return; // Prevent login if the account is disabled
+              }
+
+              // Navigate to the appropriate screen based on the user's role
+              if (role == 'Admin') {
+                Navigator.pushReplacementNamed(context, '/Admin-dashboard');
+              } else if (role == 'Chef') {
+                Navigator.pushReplacementNamed(context, '/chef-home');
+              } else {
+                Navigator.pushReplacementNamed(context, '/home');
+
+              }
             } else {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('No user data found. Please contact admin.')),
               );
             }
           }
@@ -65,146 +81,85 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 50),
-                Container(
-                  child: Image.asset(
-                    'assets/chef_logo.png',
-                    width: 100,
-                    height: 100,
-                  ),
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty || value.length < 6) {
+                    return 'Password must be at least 6 characters long';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _signIn,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  minimumSize: Size(double.infinity, 50),
                 ),
-                SizedBox(height: 20),
-                Text(
-                  'SIGN IN',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+                child: Text(
+                  'Login',
+                  style: TextStyle(fontSize: 18),
                 ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account? | ",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/signup');
-                      },
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email or username',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email or username';
-                      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Don’t have an account?'),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signup');
                     },
-                  ),
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(color: Colors.red),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      } else if (value.length < 6) {
-                        return 'Password must be at least 6 characters long';
-                      }
-                      return null;
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Click  to Forget Password'),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/forget-password');
                     },
-                  ),
-                ),
-                SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: _signIn,
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.redAccent,
-                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                    child: Text(
+                      'Forget Password',
+                      style: TextStyle(color: Colors.red),
                     ),
                   ),
-                  child: Text(
-                    'SIGN IN',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ForgotPasswordScreen(),
-                      ),
-                    );
+                ],
+              ),
 
-                    // Navigate to the Forgot Password page
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 50),
-              ],
-            ),
+
+
+            ],
           ),
         ),
       ),

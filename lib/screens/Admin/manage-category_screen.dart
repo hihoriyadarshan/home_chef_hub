@@ -5,7 +5,7 @@ import 'dart:io';
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import '../models/category_model.dart';
+import '../../models/category_model.dart';
 
 class ManageCategoryScreen extends StatefulWidget {
   @override

@@ -5,39 +5,18 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
-import '../models/sub-category_model.dart';
-import '../models/category_model.dart';
+import '../../models/category_model.dart';
 
-class SubCategoryScreen extends StatefulWidget {
+class CategoryScreen extends StatefulWidget {
   @override
-  _SubCategoryScreenState createState() => _SubCategoryScreenState();
+  _CategoryScreenState createState() => _CategoryScreenState();
 }
 
-class _SubCategoryScreenState extends State<SubCategoryScreen> {
+class _CategoryScreenState extends State<CategoryScreen> {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-  final TextEditingController _subCategoryNameController = TextEditingController();
-  File? _subcategoryImage;
+  final TextEditingController _categoryNameController = TextEditingController();
+  File? _categoryImage;
   html.File? _webImage;
-  List<CategoryModel> _categories = [];
-  CategoryModel? _selectedCategory;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchCategories();
-  }
-
-  Future<void> _fetchCategories() async {
-    final snapshot = await _database.ref().child('categories').once();
-    final data = snapshot.snapshot.value as Map<dynamic, dynamic>?;
-
-    if (data != null) {
-      setState(() {
-        _categories = data.values.map((value) => CategoryModel.fromMap(Map<String, dynamic>.from(value))).toList();
-      });
-    }
-  }
 
   Future<void> _pickImage() async {
     if (kIsWeb) {
@@ -59,22 +38,22 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
       final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
-          _subcategoryImage = File(pickedFile.path);
+          _categoryImage = File(pickedFile.path);
         });
       }
     }
   }
 
-  Future<String?> _uploadImage(String scid) async {
+  Future<String?> _uploadImage(String cid) async {
     try {
-      final storageRef = _storage.ref().child('subcategory_photos').child('$scid.jpg');
+      final storageRef = FirebaseStorage.instance.ref().child('category_photos').child('$cid.jpg');
 
       if (kIsWeb && _webImage != null) {
         final uploadTask = storageRef.putBlob(_webImage!);
         final snapshot = await uploadTask.whenComplete(() {});
         return await snapshot.ref.getDownloadURL();
-      } else if (!kIsWeb && _subcategoryImage != null) {
-        final uploadTask = storageRef.putFile(_subcategoryImage!);
+      } else if (!kIsWeb && _categoryImage != null) {
+        final uploadTask = storageRef.putFile(_categoryImage!);
         final snapshot = await uploadTask.whenComplete(() {});
         return await snapshot.ref.getDownloadURL();
       }
@@ -85,28 +64,44 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     return null;
   }
 
-  Future<void> _createSubCategory() async {
-    final subCategoryName = _subCategoryNameController.text.trim();
+  Future<bool> _checkCategoryExists(String categoryName) async {
+    final snapshot = await _database
+        .ref()
+        .child('categories')
+        .orderByChild('category')
+        .equalTo(categoryName)
+        .once();
+    return snapshot.snapshot.exists;
+  }
 
-    if (subCategoryName.isEmpty || _selectedCategory == null) {
+  void createCategory() async {
+    final categoryName = _categoryNameController.text.trim();
+
+    if (categoryName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a subcategory name and select a category')),
+        SnackBar(content: Text('Please enter a category name')),
       );
       return;
     }
 
-    try {
-      final scid = DateTime.now().millisecondsSinceEpoch.toString(); // Unique ID
-      String? subCategoryPhotoUrl = await _uploadImage(scid);
+    // Check if the category already exists
+    final exists = await _checkCategoryExists(categoryName);
+    if (exists) {
+      _showAlertDialog('Category already exists');
+      return;
+    }
 
-      SubCategoryModel subCategoryModel = SubCategoryModel(
-        scid: scid,
-        subCategory: subCategoryName,
-        categoryId: _selectedCategory!.cid,
-        subCategoryPhotoUrl: subCategoryPhotoUrl,
+    try {
+      final cid = DateTime.now().millisecondsSinceEpoch.toString(); // Unique ID
+      String? categoryPhotoUrl = await _uploadImage(cid);
+
+      CategoryModel categoryModel = CategoryModel(
+        cid: cid,
+        category: categoryName,
+        categoryPhotoUrl: categoryPhotoUrl,
       );
 
-      await _database.ref().child('subcategories').child(scid).set(subCategoryModel.toMap());
+      await _database.ref().child('categories').child(cid).set(categoryModel.toMap());
 
       Navigator.pop(context); // Go back to the previous screen
     } catch (e) {
@@ -116,27 +111,40 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     }
   }
 
+  void _showAlertDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alert'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'Create Sub-Category',
-          style: TextStyle(
-            // fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
+            Navigator.pop(context); // Navigates back to the previous screen
           },
         ),
-        backgroundColor: Colors.red, // You can adjust the color as per your design
-        elevation: 0,
+        title: Text('Create Category'),
+        backgroundColor: Colors.red,
       ),
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -144,17 +152,16 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 40),
-
-              //Logo
-
+              // Logo
               CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage('assets/chef_logo.png'),
               ),
               SizedBox(height: 20),
 
+              // Create Category Text
               Text(
-                'CREATE SUB-CATEGORY',
+                'CREATE CATEGORY',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -162,43 +169,11 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
               ),
               SizedBox(height: 10),
 
-
-              // Category Dropdown with Photo
-              DropdownButton<CategoryModel>(
-                value: _selectedCategory,
-                hint: Text('Select Category'),
-                items: _categories.map((category) {
-                  return DropdownMenuItem<CategoryModel>(
-                    value: category,
-                    child: Row(
-                      children: [
-                        category.categoryPhotoUrl != null
-                            ? Image.network(
-                          category.categoryPhotoUrl!,
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.cover,
-                        )
-                            : SizedBox(width: 40, height: 40), // Placeholder if no photo
-                        SizedBox(width: 10),
-                        Text(category.category),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-              ),
-              SizedBox(height: 20),
-
               // Input Fields
-              _buildTextField(_subCategoryNameController, 'Sub-Category Name'),
+              _buildTextField(_categoryNameController, 'Category Name'),
               SizedBox(height: 20),
 
-              // Subcategory Image Picker
+              // Category Image Picker
               GestureDetector(
                 onTap: _pickImage,
                 child: Container(
@@ -212,20 +187,21 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                     child: kIsWeb
                         ? (_webImage == null
                         ? Icon(Icons.add_a_photo, size: 50)
-                        : Image.network(html.Url.createObjectUrl(_webImage!), height: 100, width: 100, fit: BoxFit.cover))
-                        : (_subcategoryImage == null
+                        : Image.network(html.Url.createObjectUrl(_webImage!),
+                        height: 100, width: 100, fit: BoxFit.cover))
+                        : (_categoryImage == null
                         ? Icon(Icons.add_a_photo, size: 50)
-                        : Image.file(_subcategoryImage!, height: 100, width: 100, fit: BoxFit.cover)),
+                        : Image.file(_categoryImage!,
+                        height: 100, width: 100, fit: BoxFit.cover)),
                   ),
                 ),
               ),
-
               SizedBox(height: 20),
 
               // Create Button
               ElevatedButton(
-                onPressed: _createSubCategory,
-                child: Text('Create Sub-Category'),
+                onPressed: createCategory,
+                child: Text('Create Category'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(

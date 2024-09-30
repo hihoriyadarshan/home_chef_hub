@@ -6,7 +6,8 @@ class UserModel {
   final String phone;
   final String address;
   final String? profilePhotoUrl;
-  final String? role; // Add this line
+  final String? role;
+  final String status; // Add this field for status ('active', 'suspended', 'disabled')
 
   UserModel({
     required this.uid,
@@ -17,6 +18,7 @@ class UserModel {
     required this.address,
     this.profilePhotoUrl,
     this.role,
+    this.status = 'active', // Default status is 'active'
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class UserModel {
       'address': address,
       'profilePhotoUrl': profilePhotoUrl,
       'role': role,
+      'status': status, // Include status in the map
     };
   }
 
@@ -42,6 +45,7 @@ class UserModel {
       address: map['address'],
       profilePhotoUrl: map['profilePhotoUrl'],
       role: map['role'],
+      status: map['status'] ?? 'active', // Default to 'active' if not present
     );
   }
 }

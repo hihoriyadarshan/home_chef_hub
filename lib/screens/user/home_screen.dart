@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../models/category_model.dart';
-import 'category_details_screen.dart';
+import '../../models/category_model.dart';
+import '../Admin/category_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -135,6 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Profile'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile'); // Use named route for Create Sub-Category
+
               },
             ),
             ListTile(
@@ -159,6 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Logout'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.pushNamed(context, '/login'); // Use named route for Create Sub-Category
+
               },
             ),
 

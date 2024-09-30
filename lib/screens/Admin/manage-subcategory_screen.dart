@@ -5,8 +5,8 @@ import 'dart:html' as html;
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import '../models/sub-category_model.dart';
-import '../models/category_model.dart'; // Import CategoryModel
+import '../../models/sub-category_model.dart';
+import '../../models/category_model.dart'; // Import CategoryModel
 
 class ManageSubCategoryScreen extends StatefulWidget {
   @override

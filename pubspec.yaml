@@ -47,6 +47,7 @@ dependencies:
   firebase_storage_web:
   font_awesome_flutter:
   url_launcher:
+  fluttertoast:
 
 dev_dependencies:
   flutter_test:

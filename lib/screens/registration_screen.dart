@@ -8,7 +8,7 @@ import 'dart:html' as html;
 import 'dart:io';
 import 'package:intl/intl.dart';
 import '../models/user_model.dart';
-import 'home_screen.dart';
+import 'user/home_screen.dart';
 import 'verify_email_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -63,8 +63,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<String?> _uploadImage(String uid) async {
     try {
-      final storageRef =
-      FirebaseStorage.instance.ref().child('profile_photos').child('$uid.jpg');
+      final storageRef = FirebaseStorage.instance.ref().child('profile_photos').child('$uid.jpg');
       if (kIsWeb && _webImage != null) {
         final uploadTask = storageRef.putBlob(_webImage!);
         final snapshot = await uploadTask.whenComplete(() {});
@@ -84,8 +83,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void registerUser() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential =
-        await _auth.createUserWithEmailAndPassword(
+        // Create user with Firebase Authentication
+        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
@@ -94,6 +93,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         if (user != null) {
           String? profilePhotoUrl = await _uploadImage(user.uid);
 
+          // Set initial status to 'active'
           UserModel userModel = UserModel(
             uid: user.uid,
             username: _usernameController.text.trim(),
@@ -103,16 +103,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             address: _addressController.text.trim(),
             profilePhotoUrl: profilePhotoUrl,
             role: _selectedRole,
+            status: 'active', // Initial status is set to active
           );
 
+          // Save user information to Firebase Database
           await _database.ref().child('users').child(user.uid).set(userModel.toMap());
 
           // Send email verification
           await user.sendEmailVerification();
 
+          // Redirect to verification screen
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => VerifyEmailScreen()), // Redirect to verification screen
+            MaterialPageRoute(builder: (context) => VerifyEmailScreen()),
           );
         }
       } catch (e) {
@@ -180,7 +183,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // Optionally, you can add an AppBar here
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -221,7 +223,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 }),
                 SizedBox(height: 20),
                 _buildTextField(_emailController, 'Email', validator: (value) {
-                  if (value == null || value.isEmpty ||
+                  if (value == null ||
+                      value.isEmpty ||
                       !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                     return 'Please enter a valid email';
                   }
@@ -236,18 +239,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       return null;
                     }),
                 SizedBox(height: 20),
-                _buildTextField(_dobController, 'Date of Birth (dd/MM/yyyy)',
-                    validator: (value) {
-                      if (value == null || value.isEmpty ||
-                          !RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
-                        return 'Please enter a valid date (dd/MM/yyyy)';
-                      }
-                      return null;
-                    }),
+                _buildTextField(_dobController, 'Date of Birth (dd/MM/yyyy)', validator: (value) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      !RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
+                    return 'Please enter a valid date (dd/MM/yyyy)';
+                  }
+                  return null;
+                }),
                 SizedBox(height: 20),
                 _buildTextField(_phoneController, 'Phone Number', validator: (value) {
-                  if (value == null || value.isEmpty ||
-                      !RegExp(r'^\d+$').hasMatch(value)) {
+                  if (value == null || value.isEmpty || !RegExp(r'^\d+$').hasMatch(value)) {
                     return 'Please enter a valid phone number';
                   }
                   return null;
@@ -273,13 +275,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     border: OutlineInputBorder(),
                   ),
                   hint: Text('Select Role'),
-                  onChanged: (value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _selectedRole = value;
                     });
                   },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null) {
                       return 'Please select a role';
                     }
                     return null;
@@ -288,16 +290,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: registerUser,
+                  child: Text('Register'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    padding: EdgeInsets.symmetric(vertical: 16), backgroundColor: Colors.red,
                     minimumSize: Size(double.infinity, 50),
                   ),
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(fontSize: 18),
-                  ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
               ],
             ),
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../models/sub-category_model.dart';
+import '../../models/sub-category_model.dart';
 
 class CategoryDetailsScreen extends StatefulWidget {
   final String categoryId;
@@ -25,7 +25,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
   Future<void> _fetchSubCategories() async {
     final snapshot = await _database
         .ref()
-        .child('Dishes')
+        .child('subcategories')
         .orderByChild('categoryId')
         .equalTo(widget.categoryId)
         .once();
@@ -43,7 +43,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.categoryName} Dishes'),
+        title: Text('${widget.categoryName} Subcategories'),
         backgroundColor: Colors.red,
       ),
       body: _subCategories.isEmpty

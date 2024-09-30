@@ -2,14 +2,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:home_chef_hub/screens/Admin/admin_chef_manage.dart';
+import 'package:home_chef_hub/screens/Admin/admin_manage_users.dart';
+import 'package:home_chef_hub/screens/Admin/category_screen.dart';
+import 'package:home_chef_hub/screens/Admin/sub-category_screen.dart';
+import 'package:home_chef_hub/screens/ProfileUpdateScreen.dart';
 import './screens/WelcomeScreen.dart';
 import './screens/login_screen.dart';
 import './screens/registration_screen.dart';
-import './screens/home_screen.dart';
-import './screens/chef_screen.dart';
-import './screens/admin_screen.dart';
+import 'screens/user/home_screen.dart';
+import 'screens/Chef_Screen/chef_screen.dart';
+import 'screens/Admin/admin_screen.dart';
 import './screens/verify_email_screen.dart';
-
+import 'screens/user/forgot_password_screen.dart';
+import './screens/Chef_Screen/Add-dish_screen.dart';
+import './screens/profile_screen.dart';
+import './screens/Admin/manage-category_screen.dart';
+import './screens/Admin/manage-subcategory_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,9 +51,20 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => RegistrationScreen(),
         '/signin': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
-        '/chef': (context) => ChefScreen(),
-        '/Admin': (context) => AdminScreen(),
+        '/chef-home': (context) => ChefHomeScreen(),
+        '/Admin-dashboard': (context) => AdminScreen(),
         '/verify-email': (context) => VerifyEmailScreen(),
+        '/forget-password': (context) =>  ForgotPasswordScreen(),
+        '/add-dish': (context) =>  AddDishScreen(),
+        '/profile': (context) =>  ProfileScreen(),
+        // '/update-profile': (context) =>  ProfileUpdateScreen(),
+        '/create-category': (context) =>  CategoryScreen(),
+        '/create-sub_category': (context) =>  SubCategoryScreen(),
+        '/manage-category': (context) =>  ManageCategoryScreen(),
+        '/manage-sub_category': (context) =>  ManageSubCategoryScreen(),
+        '/manage-user': (context) =>  AdminManageUserScreen(),
+        '/manage-chef': (context) =>  AdminChefManageScreen(),
+
 
 
       },
