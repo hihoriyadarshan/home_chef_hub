@@ -1,4 +1,3 @@
-// add_dish_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -30,6 +29,7 @@ class _AddDishScreenState extends State<AddDishScreen> {
 
   List<SubCategoryModel> _subCategories = [];
   List<CategoryModel> _categories = [];
+  List<SubCategoryModel> _filteredSubCategories = []; // List for filtered subcategories
   SubCategoryModel? _selectedSubCategory;
   CategoryModel? _selectedCategory; // To hold the selected category
   String? _chefId; // To store the current chefId
@@ -80,6 +80,16 @@ class _AddDishScreenState extends State<AddDishScreen> {
             .toList();
       });
     }
+  }
+
+  // Function to filter subcategories based on the selected category
+  void _filterSubCategoriesByCategory(CategoryModel selectedCategory) {
+    setState(() {
+      _filteredSubCategories = _subCategories
+          .where((subCategory) => subCategory.categoryId == selectedCategory.cid)
+          .toList();
+      _selectedSubCategory = null; // Reset subcategory selection when category changes
+    });
   }
 
   Future<void> _pickImage() async {
@@ -219,16 +229,19 @@ class _AddDishScreenState extends State<AddDishScreen> {
                   setState(() {
                     _selectedCategory = newValue;
                   });
+                  if (_selectedCategory != null) {
+                    _filterSubCategoriesByCategory(_selectedCategory!); // Filter subcategories
+                  }
                 },
               ),
 
               SizedBox(height: 20),
 
-              // Subcategory Dropdown with Photo
+              // Subcategory Dropdown (Filtered based on the selected category)
               DropdownButton<SubCategoryModel>(
                 value: _selectedSubCategory,
                 hint: Text('Select Sub-Category'),
-                items: _subCategories.map((subCategory) {
+                items: _filteredSubCategories.map((subCategory) {
                   return DropdownMenuItem<SubCategoryModel>(
                     value: subCategory,
                     child: Row(
