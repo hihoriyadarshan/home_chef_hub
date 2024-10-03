@@ -1,4 +1,15 @@
+// add_dish_screen.dart
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:html' as html;
+import 'package:flutter/foundation.dart';
+import '../../models/dishes_model.dart'; // Import the updated DishModel here
+import '../../models/sub-category_model.dart';
+import '../../models/category_model.dart'; // Import the CategoryModel
+import 'package:firebase_auth/firebase_auth.dart'; // For getting current user's ID
 
 class AddDishScreen extends StatefulWidget {
   @override
@@ -6,158 +17,280 @@ class AddDishScreen extends StatefulWidget {
 }
 
 class _AddDishScreenState extends State<AddDishScreen> {
-  final _formKey = GlobalKey<FormState>();
-  String? dishName;
-  String? description;
-  double? price;
-  String? categoryId;
-  String? subCategoryId;
-  String? preparationTime;
-  List<String> ingredients = [];
-  String? dishPhotoUrl;
+  final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance; // For current user
 
-  // Controllers for the TextFormFields
-  TextEditingController dishNameController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-  TextEditingController priceController = TextEditingController();
-  TextEditingController preparationTimeController = TextEditingController();
-  TextEditingController ingredientsController = TextEditingController();
+  final TextEditingController _dishNameController = TextEditingController();
+  final TextEditingController _dishDescriptionController = TextEditingController();
+  final TextEditingController _dishPriceController = TextEditingController();
 
-  // Mock category and subcategory data (replace with real data)
-  List<Map<String, String>> categories = [
-    {'id': '1', 'name': 'Main Course'},
-    {'id': '2', 'name': 'Desserts'},
-  ];
+  File? _dishImage;
+  html.File? _webImage;
 
-  List<Map<String, String>> subCategories = [
-    {'id': '1', 'name': 'Vegetarian', 'categoryId': '1'},
-    {'id': '2', 'name': 'Non-Vegetarian', 'categoryId': '1'},
-    {'id': '3', 'name': 'Cakes', 'categoryId': '2'},
-  ];
+  List<SubCategoryModel> _subCategories = [];
+  List<CategoryModel> _categories = [];
+  SubCategoryModel? _selectedSubCategory;
+  CategoryModel? _selectedCategory; // To hold the selected category
+  String? _chefId; // To store the current chefId
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategoriesAndSubCategories();
+    _getCurrentChefId();
+  }
+
+  Future<void> _getCurrentChefId() async {
+    // Assuming user is already authenticated
+    final user = _auth.currentUser;
+    if (user != null) {
+      setState(() {
+        _chefId = user.uid; // Get the current user's UID as chefId
+      });
+    }
+  }
+
+  Future<void> _fetchCategoriesAndSubCategories() async {
+    await _fetchCategories();
+    await _fetchSubCategories();
+  }
+
+  Future<void> _fetchCategories() async {
+    final snapshot = await _database.ref().child('categories').once();
+    final data = snapshot.snapshot.value as Map<dynamic, dynamic>?;
+
+    if (data != null) {
+      setState(() {
+        _categories = data.values
+            .map((value) => CategoryModel.fromMap(Map<String, dynamic>.from(value)))
+            .toList();
+      });
+    }
+  }
+
+  Future<void> _fetchSubCategories() async {
+    final snapshot = await _database.ref().child('subcategories').once();
+    final data = snapshot.snapshot.value as Map<dynamic, dynamic>?;
+
+    if (data != null) {
+      setState(() {
+        _subCategories = data.values
+            .map((value) => SubCategoryModel.fromMap(Map<String, dynamic>.from(value)))
+            .toList();
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    if (kIsWeb) {
+      final uploadInput = html.FileUploadInputElement()..accept = 'image/*';
+      uploadInput.click();
+
+      uploadInput.onChange.listen((e) async {
+        final files = uploadInput.files;
+        if (files == null || files.isEmpty) return;
+        final reader = html.FileReader();
+        reader.readAsDataUrl(files[0]!);
+        reader.onLoadEnd.listen((e) {
+          setState(() {
+            _webImage = files[0];
+          });
+        });
+      });
+    } else {
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _dishImage = File(pickedFile.path);
+        });
+      }
+    }
+  }
+
+  Future<String?> _uploadImage(String dishId) async {
+    try {
+      final storageRef = _storage.ref().child('dish_photos').child('$dishId.jpg');
+
+      if (kIsWeb && _webImage != null) {
+        final uploadTask = storageRef.putBlob(_webImage!);
+        final snapshot = await uploadTask.whenComplete(() {});
+        return await snapshot.ref.getDownloadURL();
+      } else if (!kIsWeb && _dishImage != null) {
+        final uploadTask = storageRef.putFile(_dishImage!);
+        final snapshot = await uploadTask.whenComplete(() {});
+        return await snapshot.ref.getDownloadURL();
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+    return null;
+  }
+
+  Future<void> _createDish() async {
+    final dishName = _dishNameController.text.trim();
+    final dishDescription = _dishDescriptionController.text.trim();
+    final dishPrice = _dishPriceController.text.trim();
+
+    if (dishName.isEmpty || _selectedSubCategory == null || _selectedCategory == null || dishPrice.isEmpty || _chefId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill out all fields and ensure you are signed in')),
+      );
+      return;
+    }
+
+    try {
+      final dishId = DateTime.now().millisecondsSinceEpoch.toString(); // Unique ID
+      String? dishImageUrl = await _uploadImage(dishId);
+
+      // Pass chefId and categoryId when creating the dish
+      DishModel dishModel = DishModel(
+        dishId: dishId,
+        dishName: dishName,
+        dishDescription: dishDescription,
+        dishPrice: double.tryParse(dishPrice) ?? 0.0,
+        subCategoryId: _selectedSubCategory!.scid,
+        categoryId: _selectedCategory!.cid, // Assign the categoryId
+        chefId: _chefId!, // Assign the chefId (userId)
+        dishImageUrl: dishImageUrl,
+      );
+
+      await _database.ref().child('dishes').child(dishId).set(dishModel.toMap());
+
+      Navigator.pop(context); // Go back to the previous screen
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Dish'),
+        title: Text(
+          'Add Dish',
+          style: TextStyle(fontSize: 24),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Go back to the previous screen
+          },
+        ),
+        backgroundColor: Colors.red,
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: dishNameController,
-                decoration: InputDecoration(labelText: 'Dish Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the dish name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the dish description';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: priceController,
-                decoration: InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the dish price';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid price';
-                  }
-                  return null;
-                },
-              ),
-              DropdownButtonFormField(
-                decoration: InputDecoration(labelText: 'Category'),
-                items: categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category['id'],
-                    child: Text(category['name']!),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    categoryId = value as String;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a category';
-                  }
-                  return null;
-                },
-              ),
-              DropdownButtonFormField(
-                decoration: InputDecoration(labelText: 'Subcategory'),
-                items: subCategories
-                    .where((sub) => sub['categoryId'] == categoryId)
-                    .map((subCategory) {
-                  return DropdownMenuItem(
-                    value: subCategory['id'],
-                    child: Text(subCategory['name']!),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    subCategoryId = value as String;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a subcategory';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: preparationTimeController,
-                decoration: InputDecoration(labelText: 'Preparation Time (e.g., 30 mins)'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the preparation time';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: ingredientsController,
-                decoration: InputDecoration(labelText: 'Ingredients (comma-separated)'),
-                onFieldSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    setState(() {
-                      ingredients = value.split(',').map((e) => e.trim()).toList();
-                    });
-                  }
-                },
+              SizedBox(height: 40),
+
+              // Logo
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('assets/chef_logo.png'),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Process the data
-                    print("Dish Name: $dishName");
-                    print("Ingredients: ${ingredients.join(', ')}");
-                    // TODO: Add the logic to save the dish to the database
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Dish Added Successfully')),
-                    );
-                  }
+
+              Text(
+                'ADD DISH',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+
+              // Category Dropdown
+              DropdownButton<CategoryModel>(
+                value: _selectedCategory,
+                hint: Text('Select Category'),
+                items: _categories.map((category) {
+                  return DropdownMenuItem<CategoryModel>(
+                    value: category,
+                    child: Text(category.category),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedCategory = newValue;
+                  });
                 },
-                child: Text('Add Dish'),
+              ),
+
+              SizedBox(height: 20),
+
+              // Subcategory Dropdown with Photo
+              DropdownButton<SubCategoryModel>(
+                value: _selectedSubCategory,
+                hint: Text('Select Sub-Category'),
+                items: _subCategories.map((subCategory) {
+                  return DropdownMenuItem<SubCategoryModel>(
+                    value: subCategory,
+                    child: Row(
+                      children: [
+                        subCategory.subCategoryPhotoUrl != null
+                            ? Image.network(
+                          subCategory.subCategoryPhotoUrl!,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                        )
+                            : SizedBox(width: 40, height: 40), // Placeholder if no photo
+                        SizedBox(width: 10),
+                        Text(subCategory.subCategory),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedSubCategory = newValue;
+                  });
+                },
+              ),
+
+              SizedBox(height: 20),
+
+              // Dish Name
+              TextField(
+                controller: _dishNameController,
+                decoration: InputDecoration(labelText: 'Dish Name'),
+              ),
+
+              // Dish Description
+              TextField(
+                controller: _dishDescriptionController,
+                decoration: InputDecoration(labelText: 'Dish Description'),
+              ),
+
+              // Dish Price
+              TextField(
+                controller: _dishPriceController,
+                decoration: InputDecoration(labelText: 'Dish Price'),
+                keyboardType: TextInputType.number,
+              ),
+
+              SizedBox(height: 20),
+
+              // Upload Dish Image Button
+              ElevatedButton.icon(
+                onPressed: _pickImage,
+                icon: Icon(Icons.image),
+                label: Text('Upload Dish Image'),
+              ),
+
+              SizedBox(height: 20),
+
+              // Create Dish Button
+              ElevatedButton(
+                onPressed: _createDish,
+                child: Text('Create Dish'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               ),
             ],
           ),

@@ -152,6 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Profile'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile'); // Use named route for Create Sub-Category
+
               },
             ),
 

@@ -1,43 +1,51 @@
+// dishes_model.dart
+
 class DishModel {
-  final String dishId;
-  final String chefId; // Foreign Key (Chef is also a User with role 'chef')
-  final String dishName;
-  final String description;
-  final String subCategoryId; // Foreign Key to SubCategory
-  final double price;
-  final String? dishPhotoUrl;
+  String? dishId;
+  String dishName;
+  String dishDescription;
+  double dishPrice;
+  String? dishImageUrl;
+  String subCategoryId;
+  String categoryId; // Add categoryId here
+  String chefId; // Add chefId here
 
   DishModel({
     required this.dishId,
-    required this.chefId,
     required this.dishName,
-    required this.description,
+    required this.dishDescription,
+    required this.dishPrice,
     required this.subCategoryId,
-    required this.price,
-    this.dishPhotoUrl,
+    required this.categoryId, // Initialize categoryId
+    required this.chefId, // Initialize chefId
+    this.dishImageUrl,
   });
 
+  // Convert a Dish object into a Map
   Map<String, dynamic> toMap() {
     return {
       'dishId': dishId,
-      'chefId': chefId,
       'dishName': dishName,
-      'description': description,
+      'dishDescription': dishDescription,
+      'dishPrice': dishPrice,
       'subCategoryId': subCategoryId,
-      'price': price,
-      'dishPhotoUrl': dishPhotoUrl,
+      'categoryId': categoryId, // Include categoryId in the map
+      'chefId': chefId, // Include chefId in the map
+      'dishImageUrl': dishImageUrl,
     };
   }
 
+  // Create a Dish object from a Map
   factory DishModel.fromMap(Map<String, dynamic> map) {
     return DishModel(
       dishId: map['dishId'],
-      chefId: map['chefId'],
       dishName: map['dishName'],
-      description: map['description'],
+      dishDescription: map['dishDescription'],
+      dishPrice: map['dishPrice'],
       subCategoryId: map['subCategoryId'],
-      price: map['price'],
-      dishPhotoUrl: map['dishPhotoUrl'],
+      categoryId: map['categoryId'], // Extract categoryId from the map
+      chefId: map['chefId'], // Extract chefId from the map
+      dishImageUrl: map['dishImageUrl'],
     );
   }
 }
