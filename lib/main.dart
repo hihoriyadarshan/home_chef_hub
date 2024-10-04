@@ -19,6 +19,8 @@ import './screens/Chef_Screen/Add-dish_screen.dart';
 import './screens/profile_screen.dart';
 import './screens/Admin/manage-category_screen.dart';
 import './screens/Admin/manage-subcategory_screen.dart';
+import './screens/user/show_dish_details.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,7 +66,7 @@ class MyApp extends StatelessWidget {
         '/manage-sub_category': (context) =>  ManageSubCategoryScreen(),
         '/manage-user': (context) =>  AdminManageUserScreen(),
         '/manage-chef': (context) =>  AdminChefManageScreen(),
-
+        '/show-dish-details': (context) => ShowDishDetailsScreen(subCategoryId: ''),
 
 
       },

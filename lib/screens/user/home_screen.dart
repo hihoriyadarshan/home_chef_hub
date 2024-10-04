@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../models/category_model.dart';
-import '../Admin/category_details_screen.dart';
+import 'category_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

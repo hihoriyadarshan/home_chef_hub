@@ -48,6 +48,8 @@ dependencies:
   font_awesome_flutter:
   url_launcher:
   fluttertoast:
+  carousel_slider:
+  flutter_rating_bar:
 
 dev_dependencies:
   flutter_test:
