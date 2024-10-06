@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../models/dishes_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart'; // Rating bar package
+import '../user/chef_booking_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ShowDishDetailsScreen extends StatefulWidget {
   final String subCategoryId;
@@ -85,7 +87,6 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
 
   // Responsive dish card design
   Widget _buildDishCard(DishModel dish, BuildContext context) {
-    // MediaQuery to get screen width for responsive layout
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Card(
@@ -97,7 +98,6 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            // Responsive layout: If screen width is large, show image and text side by side
             screenWidth > 400 ? _buildHorizontalLayout(dish, context) : _buildVerticalLayout(dish, context),
           ],
         ),
@@ -137,7 +137,7 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
           ? Image.network(
         dish.dishImageUrl!,
         height: 180,
-        width: 180, // Adjust for responsiveness
+        width: 180,
         fit: BoxFit.cover,
       )
           : Icon(Icons.fastfood, size: 100, color: Colors.orange),
@@ -149,7 +149,6 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Dish name
         Text(
           dish.dishName,
           style: TextStyle(
@@ -158,10 +157,7 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
             color: Colors.black,
           ),
         ),
-
         SizedBox(height: 5),
-
-        // Dish description (with text ellipsis if too long)
         Text(
           dish.dishDescription,
           style: TextStyle(
@@ -171,10 +167,7 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
-
         SizedBox(height: 10),
-
-        // Dish price
         Text(
           '\$${dish.dishPrice.toStringAsFixed(2)}',
           style: TextStyle(
@@ -183,10 +176,7 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
             color: Colors.redAccent,
           ),
         ),
-
         SizedBox(height: 10),
-
-        // Rating bar widget
         RatingBar.builder(
           initialRating: 5,
           minRating: 1,
@@ -202,23 +192,19 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
             print(rating);
           },
         ),
-
         SizedBox(height: 10),
-
-        // Buttons: Book Chef and View More Details (responsive button width)
-        _buildResponsiveButtons(context),
+        _buildResponsiveButtons(context, dish),
       ],
     );
   }
 
   // Responsive button layout
-  Widget _buildResponsiveButtons(BuildContext context) {
+  Widget _buildResponsiveButtons(BuildContext context, DishModel dish) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Book Chef button
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
@@ -227,8 +213,31 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
             ),
             padding: EdgeInsets.symmetric(horizontal: screenWidth > 600 ? 30 : 15, vertical: 10),
           ),
-          onPressed: () {
-            // Navigate to book chef page
+          onPressed: () async {
+            // Get the current authenticated user ID
+            final String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+            if (userId != null) {
+              // Navigate to the ChefBookingScreen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChefBookingScreen(
+                    userId: userId, // Pass the current user ID
+                    chefId: dish.chefId, // Pass the chef's ID
+                    dishId: dish.dishId!, // Pass the dish ID
+                    totalAmount: dish.dishPrice, // Pass the dish price
+                  ),
+                ),
+              );
+            } else {
+              // Show error if user is not logged in
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Please log in to book a chef.'),
+                ),
+              );
+            }
           },
           child: Text(
             'Book Chef',
@@ -238,8 +247,6 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
             ),
           ),
         ),
-
-        // View More Details button
         OutlinedButton(
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: Colors.redAccent, width: 2),
@@ -249,7 +256,7 @@ class _ShowDishDetailsScreenState extends State<ShowDishDetailsScreen> {
             padding: EdgeInsets.symmetric(horizontal: screenWidth > 600 ? 30 : 15, vertical: 10),
           ),
           onPressed: () {
-            // Navigate to dish detail page
+            // Navigate to dish detail page or perform another action
           },
           child: Text(
             'View More Details',

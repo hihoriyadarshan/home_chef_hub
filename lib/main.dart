@@ -27,7 +27,7 @@ void main() async {
   await Firebase.initializeApp(
     options: kIsWeb
         ? FirebaseOptions(
-      apiKey: "AIzaSyBKB03rBU6KmX5Ex0RWuDvhsCPnpVb8gsI",
+      apiKey:  "AIzaSyBKB03rBU6KmX5Ex0RWuDvhsCPnpVb8gsI",
       authDomain: "homechefhub-f9445.firebaseapp.com",
       projectId: "homechefhub-f9445",
       storageBucket: "homechefhub-f9445.appspot.com",
