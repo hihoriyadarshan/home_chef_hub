@@ -6,7 +6,7 @@ import 'package:home_chef_hub/screens/Admin/admin_chef_manage.dart';
 import 'package:home_chef_hub/screens/Admin/admin_manage_users.dart';
 import 'package:home_chef_hub/screens/Admin/category_screen.dart';
 import 'package:home_chef_hub/screens/Admin/sub-category_screen.dart';
-import 'package:home_chef_hub/screens/user/help_faq_screen.dart';
+import 'package:home_chef_hub/screens/ProfileUpdateScreen.dart';
 import './screens/WelcomeScreen.dart';
 import './screens/login_screen.dart';
 import './screens/registration_screen.dart';
@@ -20,8 +20,6 @@ import './screens/profile_screen.dart';
 import './screens/Admin/manage-category_screen.dart';
 import './screens/Admin/manage-subcategory_screen.dart';
 import './screens/user/show_dish_details.dart';
-import './screens/change_password_screen.dart';
-import './screens/user/help_faq_screen.dart';
 
 
 void main() async {
@@ -29,7 +27,7 @@ void main() async {
   await Firebase.initializeApp(
     options: kIsWeb
         ? FirebaseOptions(
-      apiKey: "AIzaSyBKB03rBU6KmX5Ex0RWuDvhsCPnpVb8gsI",
+      apiKey:  "AIzaSyBKB03rBU6KmX5Ex0RWuDvhsCPnpVb8gsI",
       authDomain: "homechefhub-f9445.firebaseapp.com",
       projectId: "homechefhub-f9445",
       storageBucket: "homechefhub-f9445.appspot.com",
@@ -69,17 +67,7 @@ class MyApp extends StatelessWidget {
         '/manage-user': (context) =>  AdminManageUserScreen(),
         '/manage-chef': (context) =>  AdminChefManageScreen(),
         '/show-dish-details': (context) => ShowDishDetailsScreen(subCategoryId: ''),
-        '/change-password': (context) => ChangePasswordScreen(),
-        // '/HelpFaqScreen': (context) => HelpFaqScreen(),
-        '/HelpFaqScreen': (context) {
-          // Ensure to get the user ID from FirebaseAuth
-          final User? user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
-            return HelpFaqScreen(userId: user.uid); // Pass user ID here
-          } else {
-            return LoginScreen(); // Redirect to login if user is not authenticated
-          }
-        },
+
 
       },
     );
