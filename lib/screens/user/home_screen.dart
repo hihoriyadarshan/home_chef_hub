@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:home_chef_hub/screens/user/help_faq_screen.dart';
 import '../../models/category_model.dart';
 import 'category_details_screen.dart';
 
@@ -135,42 +136,41 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Profile'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/profile'); // Use named route for Create Sub-Category
-
+                Navigator.pushNamed(context, '/profile');
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
+              leading: Icon(Icons.help),
+              title: Text('Help & FAQ'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(
+                  context,
+                  '/HelpFaqScreen',
+                  arguments: 'YourUserIdHere', // Pass the actual userId here
+                );
               },
             ),
-
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
+              leading: Icon(Icons.password),
+              title: Text('Change Password'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/profile'); // Use named route for Create Sub-Category
-
+                Navigator.pushNamed(context, '/change-password');
               },
             ),
-
-
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/login'); // Use named route for Create Sub-Category
-
+                Navigator.pushNamed(context, '/login');
               },
             ),
-
           ],
         ),
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
