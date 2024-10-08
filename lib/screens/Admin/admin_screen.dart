@@ -107,6 +107,16 @@ class AdminScreen extends StatelessWidget {
                 // Navigate to Settings screen (no named route defined yet)
               },
             ),
+
+            ListTile(
+              leading: Icon(Icons.password),
+              title: Text('Change Password'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/change-password');
+              },
+            ),
+
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
@@ -140,10 +150,10 @@ class AdminScreen extends StatelessWidget {
                 children: [
                   _buildDashboardItem(
                     context,
-                    title: 'View Reports',
+                    title: 'View All Dishes',
                     icon: Icons.analytics,
                     onTap: () {
-                      // You can add the route for reports later
+                      Navigator.pushNamed(context, '/manage-dishes');
                     },
                   ),
                   _buildDashboardItem(
@@ -194,6 +204,20 @@ class AdminScreen extends StatelessWidget {
                       Navigator.pushNamed(context, '/manage-sub_category'); // Named route for Manage Sub-Category
                     },
                   ),
+
+                  _buildDashboardItem(
+                    context,
+                    title: 'All user Booking Details',
+                    icon: Icons.people,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/AllBooking-details'); // Named route for Manage Users
+                    },
+                  ),
+
+
+
+
+
                 ],
               ),
             ),

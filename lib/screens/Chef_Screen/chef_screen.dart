@@ -54,11 +54,11 @@ class ChefHomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.contact_page),
-              title: Text('Contact'),
+              leading: Icon(Icons.password),
+              title: Text('Change Password'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/contact');
+                Navigator.pushNamed(context, '/change-password');
               },
             ),
           ],

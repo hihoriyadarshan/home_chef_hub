@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:home_chef_hub/screens/Admin/admin_booking_details.dart';
 import 'package:home_chef_hub/screens/Admin/admin_chef_manage.dart';
 import 'package:home_chef_hub/screens/Admin/admin_manage_users.dart';
+import 'package:home_chef_hub/screens/Admin/admin_show_all_dish.dart';
 import 'package:home_chef_hub/screens/Admin/category_screen.dart';
 import 'package:home_chef_hub/screens/Admin/sub-category_screen.dart';
 import 'package:home_chef_hub/screens/user/help_faq_screen.dart';
@@ -70,7 +72,8 @@ class MyApp extends StatelessWidget {
         '/manage-chef': (context) =>  AdminChefManageScreen(),
         '/show-dish-details': (context) => ShowDishDetailsScreen(subCategoryId: ''),
         '/change-password': (context) => ChangePasswordScreen(),
-        // '/HelpFaqScreen': (context) => HelpFaqScreen(),
+        '/manage-dishes': (context) => AdminShowAllDishes(),
+        // '/AllBooking-details': (context) => AdminBookingDetails(),
         '/HelpFaqScreen': (context) {
           // Ensure to get the user ID from FirebaseAuth
           final User? user = FirebaseAuth.instance.currentUser;
