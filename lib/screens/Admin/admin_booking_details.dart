@@ -1,128 +1,93 @@
-// import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import '../../models/booking_model.dart'; // Ensure this file has the correct definition for BookingModel
-// import '../../models/user_model.dart';   // Ensure this file has the correct definition for UserModel
-// import '../../models/dishes_model.dart'; // Ensure this is correctly defined and imported
-//
-// class AdminBookingDetails extends StatefulWidget {
-//   @override
-//   _AdminBookingDetailsState createState() => _AdminBookingDetailsState();
-// }
-//
-// class _AdminBookingDetailsState extends State<AdminBookingDetails> {
-//   List<BookingModel> bookings = [];
-//   List<UserModel> chefs = [];
-//   Map<String, List<DishModel>> dishesMap = {}; // Map to hold dishes for each booking
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     fetchAllBookingDetails();
-//   }
-//
-//   Future<void> fetchAllBookingDetails() async {
-//     try {
-//       // Fetch all bookings
-//       QuerySnapshot bookingSnapshot = await FirebaseFirestore.instance
-//           .collection('bookings')
-//           .get();
-//
-//       List<BookingModel> fetchedBookings = [];
-//       for (var doc in bookingSnapshot.docs) {
-//         fetchedBookings.add(BookingModel.fromMap(doc.data() as Map<String, dynamic>));
-//       }
-//
-//       setState(() {
-//         bookings = fetchedBookings;
-//       });
-//
-//       // Fetch chefs and dishes for each booking
-//       for (BookingModel booking in bookings) {
-//         // Fetch chef details
-//         DocumentSnapshot chefSnapshot = await FirebaseFirestore.instance
-//             .collection('users')
-//             .doc(booking.chefId) // Get chefId from booking
-//             .get();
-//
-//         if (chefSnapshot.exists) {
-//           chefs.add(UserModel.fromMap(chefSnapshot.data() as Map<String, dynamic>));
-//         }
-//
-//         // Fetch dishes details
-//         List<DishModel> fetchedDishes = [];
-//         for (String dishId in booking.dishIds) {
-//           DocumentSnapshot dishSnapshot = await FirebaseFirestore.instance
-//               .collection('dishes')
-//               .doc(dishId)
-//               .get();
-//
-//           if (dishSnapshot.exists) {
-//             fetchedDishes.add(DishModel.fromMap(dishSnapshot.data() as Map<String, dynamic>));
-//           }
-//         }
-//
-//         // Store the dishes in the map
-//         dishesMap[booking.bookingId] = fetchedDishes;
-//       }
-//
-//       setState(() {
-//         // After fetching all chefs and dishes, update the state
-//       });
-//     } catch (e) {
-//       print('Error fetching data: $e');
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('All Booking Details'),
-//       ),
-//       body: bookings.isEmpty
-//           ? Center(child: CircularProgressIndicator())
-//           : ListView.builder(
-//         itemCount: bookings.length,
-//         itemBuilder: (context, index) {
-//           BookingModel booking = bookings[index];
-//           UserModel? chef = chefs.firstWhere((c) => c.uid == booking.chefId, orElse: () => null);
-//           List<DishModel> dishes = dishesMap[booking.bookingId] ?? [];
-//
-//           return Card(
-//             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-//             child: Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text('Booking ID: ${booking.bookingId}', style: TextStyle(fontSize: 16)),
-//                   SizedBox(height: 10),
-//                   chef == null
-//                       ? CircularProgressIndicator()
-//                       : Text('Chef: ${chef.username} (${chef.email})', style: TextStyle(fontSize: 16)),
-//                   SizedBox(height: 10),
-//                   Text('Booking Date: ${booking.bookingDate}', style: TextStyle(fontSize: 16)),
-//                   SizedBox(height: 10),
-//                   Text('Total Amount: \$${booking.totalAmount}', style: TextStyle(fontSize: 16)),
-//                   SizedBox(height: 10),
-//                   Text('Dishes:', style: TextStyle(fontSize: 16)),
-//                   if (dishes.isEmpty)
-//                     Text('No dishes available.', style: TextStyle(fontSize: 14))
-//                   else
-//                     Column(
-//                       children: dishes.map((dish) {
-//                         return ListTile(
-//                           title: Text(dish.dishName),
-//                           subtitle: Text('\$${dish.dishPrice.toString()}'),
-//                         );
-//                       }).toList(),
-//                     ),
-//                 ],
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:home_chef_hub/models/booking_model.dart';
+
+class AdminBookingDetailsScreen extends StatefulWidget {
+  @override
+  _AdminBookingDetailsScreenState createState() =>
+      _AdminBookingDetailsScreenState();
+}
+
+class _AdminBookingDetailsScreenState
+    extends State<AdminBookingDetailsScreen> {
+  final DatabaseReference _bookingRef =
+  FirebaseDatabase.instance.ref().child('bookings'); // Use ref() to access the database
+  List<BookingModel> _bookings = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBookings();
+  }
+
+  Future<void> _fetchBookings() async {
+    try {
+      DatabaseEvent event = await _bookingRef.once(); // Use once() to get the data
+      final snapshot = event.snapshot;
+
+      if (snapshot.exists) {
+        final bookingsMap = snapshot.value as Map<Object?, Object?>;
+
+        // Convert LinkedMap<Object?, Object?> to List<BookingModel>
+        List<BookingModel> bookings = [];
+        bookingsMap.forEach((key, value) {
+          // Ensure we convert the value to a Map<String, dynamic>
+          if (value is Map<Object?, Object?>) {
+            bookings.add(BookingModel.fromMap(value.cast<String, dynamic>()));
+          }
+        });
+
+        setState(() {
+          _bookings = bookings;
+          _isLoading = false;
+        });
+      } else {
+        // If no data exists
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("Error fetching bookings: $error");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Admin Booking Details'),
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _bookings.isEmpty
+          ? Center(child: Text('No bookings available')) // Display message when no bookings are found
+          : ListView.builder(
+        itemCount: _bookings.length,
+        itemBuilder: (context, index) {
+          final booking = _bookings[index];
+          return Card(
+            margin: EdgeInsets.all(10),
+            child: ListTile(
+              title: Text('Booking ID: ${booking.bookingId}'),
+              subtitle: Text(
+                'User ID: ${booking.userId}\n'
+                    'Chef ID: ${booking.chefId}\n'
+                    'Dish ID: ${booking.dishId}\n'
+                    'Date: ${booking.bookingDate}\n'
+                    'Status: ${booking.status}\n'
+                    'Total Amount: \$${booking.totalAmount.toStringAsFixed(2)}',
+              ),
+              isThreeLine: true,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

@@ -24,6 +24,7 @@ import './screens/Admin/manage-subcategory_screen.dart';
 import './screens/user/show_dish_details.dart';
 import './screens/change_password_screen.dart';
 import './screens/user/help_faq_screen.dart';
+import './screens/Admin/admin_booking_details.dart';
 
 
 void main() async {
@@ -73,7 +74,9 @@ class MyApp extends StatelessWidget {
         '/show-dish-details': (context) => ShowDishDetailsScreen(subCategoryId: ''),
         '/change-password': (context) => ChangePasswordScreen(),
         '/manage-dishes': (context) => AdminShowAllDishes(),
-        // '/AllBooking-details': (context) => AdminBookingDetails(),
+        '/admin-booking-details': (context) => AdminBookingDetailsScreen(),
+
+
         '/HelpFaqScreen': (context) {
           // Ensure to get the user ID from FirebaseAuth
           final User? user = FirebaseAuth.instance.currentUser;

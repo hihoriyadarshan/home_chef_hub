@@ -12,9 +12,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   List<CategoryModel> _categories = [];
+  List<CategoryModel> _filteredCategories = [];
   bool _isLoading = true;
   bool _isError = false;
   int _displayedCategories = 6;
+  final TextEditingController _searchController = TextEditingController();
 
   // Page controller for the promotional image slider
   final PageController _pageController = PageController();
@@ -32,6 +34,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _fetchCategories();
     Future.delayed(Duration(seconds: 3), _autoSlide);
+
+    // Add listener to update the search result when user types
+    _searchController.addListener(_filterCategories);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   // Auto-slide the promotional slider every 3 seconds
@@ -60,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
               .map((value) =>
               CategoryModel.fromMap(Map<String, dynamic>.from(value)))
               .toList();
+          _filteredCategories = _categories; // Initialize the filtered list
         });
       } else {
         setState(() {
@@ -77,6 +89,21 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Filter categories based on search input
+  void _filterCategories() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        _filteredCategories = _categories;
+      } else {
+        _filteredCategories = _categories
+            .where((category) =>
+            category.category.toLowerCase().contains(query))
+            .toList();
+      }
+    });
+  }
+
   void _viewMoreCategories() {
     setState(() {
       _displayedCategories += 6;
@@ -85,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isWideScreen = MediaQuery.of(context).size.width > 600;
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Chef HUB'),
@@ -94,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search categories...',
                 filled: true,
@@ -170,13 +199,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
             // Food Category Slider using asset images
             Container(
-              height: 200,
+              height: 300, // Height increased for larger visibility
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: _sliderImages.length,
@@ -205,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 18, color: Colors.red),
               ),
             )
-                : _categories.isEmpty
+                : _filteredCategories.isEmpty
                 ? Center(
               child: Text(
                 'No categories available',
@@ -218,26 +246,21 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(10),
               gridDelegate:
               SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: MediaQuery.of(context)
-                    .size
-                    .width >
-                    600
-                    ? 3
-                    : 2,
+                crossAxisCount: isWideScreen ? 3 : 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 3 / 2,
               ),
               itemCount: _displayedCategories >
-                  _categories.length
-                  ? _categories.length
+                  _filteredCategories.length
+                  ? _filteredCategories.length
                   : _displayedCategories,
               itemBuilder: (context, index) {
-                final category = _categories[index];
+                final category = _filteredCategories[index];
                 return HoverCard(category: category);
               },
             ),
-            if (_displayedCategories < _categories.length)
+            if (_displayedCategories < _filteredCategories.length)
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton(
@@ -248,8 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   ),
                 ),
               ),
@@ -314,6 +336,52 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
+                  // New Section for Featured Chefs
+                  Text(
+                    'Featured Chefs',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    height: 150, // For horizontal scrolling
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 5, // Example count
+                      itemBuilder: (context, index) {
+                        return Container(
+                          width: 120,
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.grey[200],
+                            image: DecorationImage(
+                              image: AssetImage('assets/chef${index + 1}.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Chef ${index + 1}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  backgroundColor: Colors.black54,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -322,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          height: 50,
+          height: 20,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

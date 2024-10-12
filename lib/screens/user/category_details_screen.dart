@@ -37,7 +37,8 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
     if (data != null) {
       setState(() {
         _subCategories = data.values
-            .map((value) => SubCategoryModel.fromMap(Map<String, dynamic>.from(value)))
+            .map((value) =>
+            SubCategoryModel.fromMap(Map<String, dynamic>.from(value)))
             .toList();
       });
     }
@@ -51,7 +52,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
       body: Column(
         children: [
           _buildCarouselSlider(),
-          _buildSubCategoryGrid(), // Updated grid UI for subcategories.
+          Expanded(child: _buildSubCategoryGrid()),
         ],
       ),
       bottomNavigationBar: _buildFooter(),
@@ -112,34 +113,37 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
     );
   }
 
-  // Updated subcategory grid with hover effect
+  // Responsive subcategory grid with card views
   Widget _buildSubCategoryGrid() {
-    return _subCategories.isEmpty
-        ? Expanded(
-      child: Center(
-        child: Text('No Subcategories Found',
-            style: TextStyle(fontSize: 18, color: Colors.grey)),
-      ),
-    )
-        : Expanded(
-      child: GridView.builder(
-        padding: EdgeInsets.all(10),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Display subcategories in two columns.
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: _subCategories.length,
-        itemBuilder: (context, index) {
-          final subCategory = _subCategories[index];
-          return _buildSubCategoryBox(subCategory);
-        },
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Determine the number of columns based on screen width
+        int crossAxisCount = constraints.maxWidth > 800 ? 4 : 2; // 4 columns for desktop, 2 for mobile
+
+        return _subCategories.isEmpty
+            ? Center(
+          child: Text('No Subcategories Found',
+              style: TextStyle(fontSize: 18, color: Colors.grey)),
+        )
+            : GridView.builder(
+          padding: EdgeInsets.all(10),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount, // Responsive column count
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: _subCategories.length,
+          itemBuilder: (context, index) {
+            final subCategory = _subCategories[index];
+            return _buildSubCategoryBox(subCategory);
+          },
+        );
+      },
     );
   }
 
-  // Individual subcategory box with hover effect and navigation
+  // Individual subcategory card with hover effect and navigation
   Widget _buildSubCategoryBox(SubCategoryModel subCategory) {
     return GestureDetector(
       onTap: () {
@@ -147,7 +151,8 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ShowDishDetailsScreen(subCategoryId: subCategory.scid),
+            builder: (context) =>
+                ShowDishDetailsScreen(subCategoryId: subCategory.scid),
           ),
         );
       },
@@ -167,8 +172,8 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
               ),
             ],
             border: Border.all(
-              color: Colors.redAccent, // Border color changes on hover
-              width: 2,
+              color: Colors.white,
+              width: 5,
             ),
           ),
           child: Column(
@@ -179,8 +184,8 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
                   subCategory.subCategoryPhotoUrl!,
-                  width: 100,
-                  height: 100,
+                  width: 502,
+                  height: 320,
                   fit: BoxFit.cover,
                 ),
               )

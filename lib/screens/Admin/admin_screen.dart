@@ -210,7 +210,7 @@ class AdminScreen extends StatelessWidget {
                     title: 'All user Booking Details',
                     icon: Icons.people,
                     onTap: () {
-                      Navigator.pushNamed(context, '/AllBooking-details'); // Named route for Manage Users
+                      Navigator.pushNamed(context, '/admin-booking-details'); // Named route for Manage Users
                     },
                   ),
 
