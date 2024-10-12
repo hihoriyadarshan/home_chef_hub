@@ -2,12 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+// import 'firebase_options.dart';
 import 'package:home_chef_hub/screens/Admin/admin_booking_details.dart';
 import 'package:home_chef_hub/screens/Admin/admin_chef_manage.dart';
 import 'package:home_chef_hub/screens/Admin/admin_manage_users.dart';
 import 'package:home_chef_hub/screens/Admin/admin_show_all_dish.dart';
 import 'package:home_chef_hub/screens/Admin/category_screen.dart';
 import 'package:home_chef_hub/screens/Admin/sub-category_screen.dart';
+import 'package:home_chef_hub/screens/Chef_Screen/mydish_screen.dart';
 import 'package:home_chef_hub/screens/user/help_faq_screen.dart';
 import './screens/WelcomeScreen.dart';
 import './screens/login_screen.dart';
@@ -75,6 +77,7 @@ class MyApp extends StatelessWidget {
         '/change-password': (context) => ChangePasswordScreen(),
         '/manage-dishes': (context) => AdminShowAllDishes(),
         '/admin-booking-details': (context) => AdminBookingDetailsScreen(),
+        '/chefDishes': (context) => MyDishesScreen(),
 
 
         '/HelpFaqScreen': (context) {

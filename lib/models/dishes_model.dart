@@ -6,7 +6,7 @@ class DishModel {
   String? dishImageUrl;
   String subCategoryId;
   String categoryId;
-  String chefId;
+  String chefId;// Foreign Key to Chef (User with role 'chef')
 
   DishModel({
     required this.dishId,
