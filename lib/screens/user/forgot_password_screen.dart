@@ -52,6 +52,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+
+
+
+
+
+
+
               children: [
                 Text(
                   'Enter your email to reset your password',

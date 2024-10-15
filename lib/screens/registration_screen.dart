@@ -262,7 +262,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   return null;
                 }),
                 SizedBox(height: 30),
-                DropdownButtonFormField<String>(
+
+            Container(
+              width: 500,
+              height: 50,
+
+              child: DropdownButtonFormField<String>(
                   value: _selectedRole,
                   items: ['User', 'Chef'].map((role) {
                     return DropdownMenuItem(
@@ -272,7 +277,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   }).toList(),
                   decoration: InputDecoration(
                     labelText: 'Select Role',
-                    border: OutlineInputBorder(),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
                   ),
                   hint: Text('Select Role'),
                   onChanged: (String? value) {
@@ -287,13 +297,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 30),
+            ),
+              SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: registerUser,
-                  child: Text('Register'),
+                  child: Text('Register',
+                  style: TextStyle(fontSize: 18,
+                      color: Colors.white),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16), backgroundColor: Colors.red,
-                    minimumSize: Size(double.infinity, 50),
+
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.red,
+
+                    minimumSize: Size(500, 50),
                   ),
                 ),
                 SizedBox(height: 30),
@@ -307,14 +324,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Widget _buildTextField(TextEditingController controller, String labelText,
       {bool obscureText = false, String? Function(String?)? validator}) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(),
+    return Container(
+      width: 500,
+      height: 50,
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: TextStyle(color: Colors.black), // Label color if needed
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // Default underline color
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.red), // Underline color when focused
+          ),
+        ),
+        obscureText: obscureText,
+        validator: validator,
       ),
-      obscureText: obscureText,
-      validator: validator,
     );
   }
 }
