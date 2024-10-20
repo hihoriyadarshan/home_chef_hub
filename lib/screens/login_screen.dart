@@ -81,9 +81,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
+        appBar: AppBar(
+          title: Text(
+            'Sign In',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Color(0xFFD32F2F),
+        ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
 
@@ -91,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
           key: _formKey,
           child: Column(
             children: [
-              SizedBox(height: 40),
+              SizedBox(height: 70),
               // Logo
               CircleAvatar(
                 radius: 60,
@@ -106,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 60), // for margin
+              SizedBox(height: 30), // for margin
 
 
                 // Email text field
@@ -125,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 20), // for margin
+              SizedBox(height: 30), // for margin
               // Password text field
               SizedBox(
                 width: 500,
@@ -143,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
               ),
               // login button
-              SizedBox(height: 20),
+              SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _signIn,
                 style: ElevatedButton.styleFrom(
@@ -151,14 +158,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   minimumSize: Size( 500,50),
                 ),
                 child: Text(
-                  'Login',
+                  'Sign In',
                   style: TextStyle(fontSize: 18,
                     color: Colors.white,
                   )
 
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

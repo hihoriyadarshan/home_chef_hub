@@ -13,7 +13,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String? _errorMessage;
-
   bool _isDarkMode = false; // Toggle for dark mode
 
   // Method to change the password
@@ -99,64 +98,113 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Change Password'),
-          actions: [
-            IconButton(
-              icon: Icon(_isDarkMode ? Icons.wb_sunny : Icons.nights_stay),
-              onPressed: _toggleTheme,
+          title: Text(
+            'Change New Password',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
             ),
-          ],
+          ),
+          backgroundColor: Color(0xFFD32F2F),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView( // Allows for scrolling on smaller screens
+          child: SingleChildScrollView(
+            // Allows for scrolling on smaller screens
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextField(
-                  controller: _currentPasswordController,
-                  decoration: InputDecoration(
-                    labelText: 'Current Password',
-                    errorText: _errorMessage,
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.grey[200], // Background color
-                    hintStyle: TextStyle(color: Colors.grey[500]), // Hint text color
+                SizedBox(height: 50),
+                Text(
+                  'Change Your Password',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: _isDarkMode ? Colors.white : Colors.black,
                   ),
-                  obscureText: true,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 30),
+                // Current Password
+                SizedBox(
+                  width: 500,
+                  height: 50,
+                  child: TextField(
+                    controller: _currentPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Current Password',
+                      labelStyle: TextStyle(
+                        color: _isDarkMode ? Colors.white70 : Colors.black,
+                      ),
+                      border: UnderlineInputBorder(),
+                      filled: true,
+                      fillColor: _isDarkMode
+                          ? Colors.grey[800]
+                          : Colors.grey[200], // Background color
+                      hintStyle:
+                      TextStyle(color: Colors.grey[500]), // Hint text color
+                    ),
+                    obscureText: true,
+                  ),
                 ),
                 SizedBox(height: 16.0),
-                TextField(
-                  controller: _newPasswordController,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    errorText: _errorMessage,
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.grey[200], // Background color
-                    hintStyle: TextStyle(color: Colors.grey[500]), // Hint text color
+                // New Password
+                SizedBox(
+                  width: 500,
+                  height: 50,
+                  child: TextField(
+                    controller: _newPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      labelStyle: TextStyle(
+                        color: _isDarkMode ? Colors.white70 : Colors.black,
+                      ),
+                      border: UnderlineInputBorder(),
+                      filled: true,
+                      fillColor: _isDarkMode
+                          ? Colors.grey[800]
+                          : Colors.grey[200], // Background color
+                      hintStyle:
+                      TextStyle(color: Colors.grey[500]), // Hint text color
+                    ),
+                    obscureText: true,
                   ),
-                  obscureText: true,
                 ),
                 SizedBox(height: 16.0),
-                TextField(
-                  controller: _confirmPasswordController,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm New Password',
-                    errorText: _errorMessage,
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.grey[200], // Background color
-                    hintStyle: TextStyle(color: Colors.grey[500]), // Hint text color
+                // Confirm Password
+
+
+                SizedBox(
+                  width: 500,
+                  height: 50,
+                  child: TextField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm New Password',
+                      labelStyle: TextStyle(
+                        color: _isDarkMode ? Colors.white70 : Colors.black,
+                      ),
+                      border: UnderlineInputBorder(),
+                      filled: true,
+                      fillColor: _isDarkMode
+                          ? Colors.grey[800]
+                          : Colors.grey[200], // Background color
+                      hintStyle:
+                      TextStyle(color: Colors.grey[500]), // Hint text color
+                    ),
+                    obscureText: true,
                   ),
-                  obscureText: true,
                 ),
-                SizedBox(height: 16.0),
+                SizedBox(height: 30),
+                // Change Password Button
                 ElevatedButton(
                   onPressed: _changePassword,
                   child: Text('Change Password'),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16.0), // Button padding
+                    backgroundColor:
+                    _isDarkMode ? Colors.blueGrey : Colors.redAccent,
+                    padding: EdgeInsets.symmetric(
+                        vertical: 16.0), // Button padding
                     textStyle: TextStyle(fontSize: 16), // Button text style
                   ),
                 ),

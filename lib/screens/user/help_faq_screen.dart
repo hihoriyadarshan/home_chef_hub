@@ -45,21 +45,49 @@ class _HelpFaqScreenState extends State<HelpFaqScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Help & FAQ'),
-      ),
+        appBar: AppBar(
+        title: Text('Help & FAQ',
+        style: TextStyle(
+        fontSize: 22,
+        color: Colors.white,
+    ),
+    ),
+          backgroundColor: Color(0xFFD32F2F),
+          bottom: PreferredSize(
+          preferredSize: Size.fromHeight(0),
+          child: Padding(
+          padding: const EdgeInsets.all(0),
+
+        ),
+       ),
+        ),
       body: Column(
         children: [
           // Input field for user's complaint
-          TextField(
+          SizedBox(height: 80),
+
+          SizedBox(
+            width: 500,
+            height: 50,
+          child: TextField(
             controller: _complaintController,
             decoration: InputDecoration(
               labelText: 'Describe your issue',
             ),
-          ),
+          ),),
+          SizedBox(height: 40),
+
           ElevatedButton(
             onPressed: _submitComplaint,
-            child: Text('Submit Complaint'),
+            child: Text('Submit Complaint',
+              style: TextStyle(fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              minimumSize: Size( 300,50),
+            ),
           ),
           _isLoading
               ? Center(child: CircularProgressIndicator())

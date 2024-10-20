@@ -182,6 +182,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Sign Up',
+          style: TextStyle(
+            fontSize: 22,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Color(0xFFD32F2F),
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -209,7 +219,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: Text('Login',
+                      child: Text('Sign In',
                           style: TextStyle(color: Colors.red, fontSize: 16)),
                     ),
                   ],
@@ -301,7 +311,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: registerUser,
-                  child: Text('Register',
+                  child: Text('Sign Up',
                   style: TextStyle(fontSize: 18,
                       color: Colors.white),
                   ),

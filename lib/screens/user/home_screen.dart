@@ -115,25 +115,18 @@ class _HomeScreenState extends State<HomeScreen> {
     final isWideScreen = MediaQuery.of(context).size.width > 600;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Chef HUB'),
-        backgroundColor: Colors.red,
+        title: Text('Home Chef HUB',
+          style: TextStyle(
+          fontSize: 30,
+          color: Colors.white,
+        ),
+        ),
+        backgroundColor: Color(0xFFD32F2F),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(60),
+          preferredSize: Size.fromHeight(8),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search categories...',
-                filled: true,
-                fillColor: Colors.white,
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
+            padding: const EdgeInsets.all(0),
+
           ),
         ),
       ),
@@ -388,28 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 20,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                icon: Icon(Icons.home, color: Colors.red),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.category, color: Colors.red),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.settings, color: Colors.red),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        ),
-      ),
+
     );
   }
 }

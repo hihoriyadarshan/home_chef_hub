@@ -43,60 +43,75 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forgot Password'),
+        title: Text(
+          'Forget Password',
+          style: TextStyle(
+            fontSize: 22,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Color(0xFFD32F2F),
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 60), // Added margin for top and bottom
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-
-
-
-
-
-
-
               children: [
+                SizedBox(height: 60),
+                // Logo
+                CircleAvatar(
+                  radius: 60,
+                  backgroundImage: AssetImage('assets/chef_logo.png'),
+                ),
+                SizedBox(height: 30), // Spacing after logo
+                Text(
+                  'Home Chef Hub',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.redAccent,
+                  ),
+                ),
+                SizedBox(height: 10), // Spacing after the title
                 Text(
                   'Enter your email to reset your password',
                   style: TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
+                SizedBox(height: 30), // Spacing before email input field
+                SizedBox(
+                  width: 500,
+                  height: 50,
+                  child: TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: UnderlineInputBorder(), // Outlined border for input field
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30), // Spacing before the button
                 ElevatedButton(
                   onPressed: _resetPassword,
                   child: Text(
-                    'Reset Password',
-                    style: TextStyle(fontSize: 18),
+                    'Forget Password',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                    backgroundColor: Colors.redAccent,
+                    minimumSize: Size(500, 50), // Adjust button width and height
                   ),
                 ),
               ],
