@@ -120,35 +120,36 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         title: Text(
           'Create Sub-Category',
           style: TextStyle(
-            // fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontSize: 22,
+            color: Colors.white,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
+            Navigator.pop(context); // Navigates back to the previous screen
           },
         ),
-        backgroundColor: Colors.red, // You can adjust the color as per your design
+        backgroundColor: Color(0xFFD32F2F), // You can adjust the color as per your design
         elevation: 0,
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
+      body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 40),
+              SizedBox(height: 70),
 
               //Logo
 
               CircleAvatar(
-                radius: 50,
+                radius: 60,
                 backgroundImage: AssetImage('assets/chef_logo.png'),
               ),
               SizedBox(height: 20),
@@ -220,18 +221,20 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                 ),
               ),
 
-              SizedBox(height: 20),
+              SizedBox(height: 30),
 
               // Create Button
               ElevatedButton(
                 onPressed: _createSubCategory,
-                child: Text('Create Sub-Category'),
+                child: Text('Create Sub-Category',
+                  style: TextStyle(fontSize: 18,
+                      color: Colors.white),),
                 style: ElevatedButton.styleFrom(
+
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+
+                  minimumSize: Size(500, 50),
                 ),
               ),
             ],
@@ -242,25 +245,21 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   }
 
   Widget _buildTextField(TextEditingController controller, String labelText) {
-    return TextFormField(
+    return SizedBox(
+        width: 500, // Set the width to 500
+        height: 50, // Set the height to 50
+        child:
+      TextFormField(
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+        border: UnderlineInputBorder(
+          borderRadius: BorderRadius.circular(0),
           borderSide: BorderSide(color: Color(0xFF565458)), // Custom border color
         ),
         filled: true,
         fillColor: Colors.white,
       ),
-    );
+    ));
   }
 }

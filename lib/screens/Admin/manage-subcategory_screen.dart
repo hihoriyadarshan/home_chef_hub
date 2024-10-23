@@ -10,13 +10,15 @@ import '../../models/category_model.dart'; // Import CategoryModel
 
 class ManageSubCategoryScreen extends StatefulWidget {
   @override
-  _ManageSubCategoryScreenState createState() =>
-      _ManageSubCategoryScreenState();
+  _ManageSubCategoryScreenState createState() => _ManageSubCategoryScreenState();
 }
 
 class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final TextEditingController _searchController = TextEditingController(); // Search bar controller
+
   List<SubCategoryModel> _subCategories = [];
+  List<SubCategoryModel> _filteredSubCategories = []; // Filtered list for search functionality
   Map<String, String> _categoryIdToNameMap = {}; // Map to store categoryId -> categoryName
   List<CategoryModel> _categories = []; // List of categories for the dropdown
 
@@ -54,6 +56,21 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
         _subCategories = data.values
             .map((value) => SubCategoryModel.fromMap(Map<String, dynamic>.from(value)))
             .toList();
+        _filteredSubCategories = _subCategories; // Initialize filtered list with full list
+      });
+    }
+  }
+
+  void _filterSubCategories(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        _filteredSubCategories = _subCategories;
+      });
+    } else {
+      setState(() {
+        _filteredSubCategories = _subCategories
+            .where((subCategory) => subCategory.subCategory.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       });
     }
   }
@@ -87,49 +104,105 @@ class _ManageSubCategoryScreenState extends State<ManageSubCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Subcategories'),
-        backgroundColor: Colors.red,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context); // Navigates back to the previous screen
+          },
+        ),
+        title: Text('Manage Subcategories',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+            )),
+        backgroundColor: Color(0xFFD32F2F),
       ),
-      body: _buildSubCategoryTable(),
+      body: Column(
+        children: [
+          // Search bar
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search Subcategories',
+                border: OutlineInputBorder(),
+                suffixIcon: Icon(Icons.search),
+              ),
+              onChanged: (query) => _filterSubCategories(query),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: _buildSubCategoryTable(), // Center the table
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildSubCategoryTable() {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+      scrollDirection: Axis.horizontal,
       child: DataTable(
+        headingRowColor: MaterialStateProperty.all(Color(0xFFF1F1F1)),
+        columnSpacing: 80,
+        horizontalMargin: 100,
+        dividerThickness: 2,
         columns: [
+           // White text
+          DataColumn(label: Text('S.No',
+          )),
           DataColumn(label: Text('Subcategory Name')),
           DataColumn(label: Text('Category')),
           DataColumn(label: Text('Image')),
           DataColumn(label: Text('Actions')),
         ],
-        rows: _subCategories.map((subCategory) {
+        rows: _filteredSubCategories.asMap().entries.map((entry) {
+          int index = entry.key;
+          SubCategoryModel subCategory = entry.value;
           final categoryName = _categoryIdToNameMap[subCategory.categoryId] ?? 'Unknown Category';
+          bool isOdd = index % 2 == 0;
 
-          return DataRow(cells: [
-            DataCell(Text(subCategory.subCategory)),
-            DataCell(Text(categoryName)),
-            DataCell(
-              subCategory.subCategoryPhotoUrl != null
-                  ? Image.network(subCategory.subCategoryPhotoUrl!, width: 50, height: 50, fit: BoxFit.cover)
-                  : SizedBox(width: 50, height: 50), // Placeholder if no photo
-            ),
-            DataCell(
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => _openUpdateSubCategoryForm(subCategory),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () => _deleteSubCategory(subCategory.scid),
-                  ),
-                ],
+          return DataRow(
+            color: MaterialStateProperty.resolveWith<Color?>(
+                    (Set<MaterialState> states) {
+                  return isOdd ? Colors.grey[200] : null;
+                }),
+            cells: [
+              DataCell(Text('${index + 1}')), // Auto-incremented S.No.
+              DataCell(Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(subCategory.subCategory),
+              )),
+              DataCell(Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(categoryName),
+              )),
+              DataCell(Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: subCategory.subCategoryPhotoUrl != null
+                    ? Image.network(subCategory.subCategoryPhotoUrl!,
+                    width: 100, height: 100, fit: BoxFit.cover) // Increased size to 100x100
+                    : Icon(Icons.image, size: 100), // Increased icon size as well
+              )),
+              DataCell(
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () => _openUpdateSubCategoryForm(subCategory),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _deleteSubCategory(subCategory.scid),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ]);
+            ],
+          );
         }).toList(),
       ),
     );
@@ -195,10 +268,10 @@ class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
 
   Future<String?> _uploadImage(String scid) async {
     try {
-      final storageRef = _storage.ref().child('subcategory_photos').child('$scid.jpg');
+      final storageRef = _storage.ref().child('subcategory_images/$scid.jpg');
 
       if (kIsWeb && _webImage != null) {
-        final uploadTask = storageRef.putBlob(_webImage!);
+        final uploadTask = storageRef.putBlob(_webImage);
         final snapshot = await uploadTask.whenComplete(() {});
         return await snapshot.ref.getDownloadURL();
       } else if (!kIsWeb && _subcategoryImage != null) {
@@ -274,8 +347,8 @@ class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
             GestureDetector(
               onTap: _pickImage,
               child: Container(
-                width: 100,
-                height: 100,
+                width: 100, // Increased width
+                height: 100, // Increased height
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8),
@@ -285,8 +358,9 @@ class _UpdateSubCategoryFormState extends State<UpdateSubCategoryForm> {
                     ? Image.network(html.Url.createObjectUrl(_webImage!))
                     : Image.file(_subcategoryImage!, fit: BoxFit.cover))
                     : widget.subCategory.subCategoryPhotoUrl != null
-                    ? Image.network(widget.subCategory.subCategoryPhotoUrl!, fit: BoxFit.cover)
-                    : Icon(Icons.add_a_photo),
+                    ? Image.network(widget.subCategory.subCategoryPhotoUrl!,
+                    fit: BoxFit.cover)
+                    : Icon(Icons.add_a_photo, size: 80),
               ),
             ),
           ],

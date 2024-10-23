@@ -10,7 +10,9 @@ class AdminChefManageScreen extends StatefulWidget {
 class _AdminChefManageScreenState extends State<AdminChefManageScreen> {
   final DatabaseReference _chefRef = FirebaseDatabase.instance.ref('users');
   List<UserModel> _chefList = [];
+  List<UserModel> _filteredChefList = [];
   bool _isLoading = true;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _AdminChefManageScreenState extends State<AdminChefManageScreen> {
 
         // Debugging: Print the chef list
         print('Filtered chef list: $_chefList');
+        _filteredChefList = _chefList; // Initialize the filtered list
       } else {
         print('No chefs found in the database.');
       }
@@ -45,6 +48,19 @@ class _AdminChefManageScreenState extends State<AdminChefManageScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  void _searchChefs(String query) {
+    setState(() {
+      _searchQuery = query;
+      if (query.isNotEmpty) {
+        _filteredChefList = _chefList.where((chef) {
+          return chef.username.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      } else {
+        _filteredChefList = _chefList;
+      }
+    });
   }
 
   Future<void> _updateChefStatus(String uid, String newStatus) async {
@@ -125,9 +141,9 @@ class _AdminChefManageScreenState extends State<AdminChefManageScreen> {
 
   Widget _buildChefList() {
     return ListView.builder(
-      itemCount: _chefList.length,
+      itemCount: _filteredChefList.length,
       itemBuilder: (context, index) {
-        final chef = _chefList[index];
+        final chef = _filteredChefList[index];
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: ListTile(
@@ -177,12 +193,37 @@ class _AdminChefManageScreenState extends State<AdminChefManageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Chefs'),
-        backgroundColor: Colors.red,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context); // Navigates back to the previous screen
+          },
+        ),
+        title: Text('Manage Chefs',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+            )),
+        backgroundColor: Color(0xFFD32F2F),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(56.0), // Height of the search bar
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: _searchChefs,
+              decoration: InputDecoration(
+                hintText: 'Search by username...',
+                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : _chefList.isEmpty
+          : _filteredChefList.isEmpty
           ? Center(child: Text('No chefs found.'))
           : _buildChefList(),
     );

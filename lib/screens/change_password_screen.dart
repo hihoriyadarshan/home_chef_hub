@@ -109,106 +109,124 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            // Allows for scrolling on smaller screens
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 50),
-                Text(
-                  'Change Your Password',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: _isDarkMode ? Colors.white : Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 30),
-                // Current Password
-                SizedBox(
-                  width: 500,
-                  height: 50,
-                  child: TextField(
-                    controller: _currentPasswordController,
-                    decoration: InputDecoration(
-                      labelText: 'Current Password',
-                      labelStyle: TextStyle(
-                        color: _isDarkMode ? Colors.white70 : Colors.black,
-                      ),
-                      border: UnderlineInputBorder(),
-                      filled: true,
-                      fillColor: _isDarkMode
-                          ? Colors.grey[800]
-                          : Colors.grey[200], // Background color
-                      hintStyle:
-                      TextStyle(color: Colors.grey[500]), // Hint text color
-                    ),
-                    obscureText: true,
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                // New Password
-                SizedBox(
-                  width: 500,
-                  height: 50,
-                  child: TextField(
-                    controller: _newPasswordController,
-                    decoration: InputDecoration(
-                      labelText: 'New Password',
-                      labelStyle: TextStyle(
-                        color: _isDarkMode ? Colors.white70 : Colors.black,
-                      ),
-                      border: UnderlineInputBorder(),
-                      filled: true,
-                      fillColor: _isDarkMode
-                          ? Colors.grey[800]
-                          : Colors.grey[200], // Background color
-                      hintStyle:
-                      TextStyle(color: Colors.grey[500]), // Hint text color
-                    ),
-                    obscureText: true,
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                // Confirm Password
+          child: Center(
 
+            child: SingleChildScrollView(
+              child: Center(
 
-                SizedBox(
-                  width: 500,
-                  height: 50,
-                  child: TextField(
-                    controller: _confirmPasswordController,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm New Password',
-                      labelStyle: TextStyle(
-                        color: _isDarkMode ? Colors.white70 : Colors.black,
-                      ),
-                      border: UnderlineInputBorder(),
-                      filled: true,
-                      fillColor: _isDarkMode
-                          ? Colors.grey[800]
-                          : Colors.grey[200], // Background color
-                      hintStyle:
-                      TextStyle(color: Colors.grey[500]), // Hint text color
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: AssetImage('assets/chef_logo.png'),
                     ),
-                    obscureText: true,
-                  ),
+
+                    SizedBox(height: 20),
+                    Text(
+                      'Change Your Password',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: _isDarkMode ? Colors.white : Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 50),
+                    // Current Password
+                    SizedBox(
+                      width: 500,
+                      height: 50,
+                      child: TextField(
+                        controller: _currentPasswordController,
+                        decoration: InputDecoration(
+                          labelText: 'Current Password',
+                          labelStyle: TextStyle(
+                            color: _isDarkMode ? Colors.white70 : Colors.black,
+                          ),
+                          border: UnderlineInputBorder(),
+                          filled: true,
+                          fillColor: _isDarkMode
+                              ? Colors.grey[800]
+                              : Colors.grey[200], // Background color
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                          ), // Hint text color
+                        ),
+                        obscureText: true,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    // New Password
+                    SizedBox(
+                      width: 500,
+                      height: 50,
+                      child: TextField(
+                        controller: _newPasswordController,
+                        decoration: InputDecoration(
+                          labelText: 'New Password',
+                          labelStyle: TextStyle(
+                            color: _isDarkMode ? Colors.white70 : Colors.black,
+                          ),
+                          border: UnderlineInputBorder(),
+                          filled: true,
+                          fillColor: _isDarkMode
+                              ? Colors.grey[800]
+                              : Colors.grey[200], // Background color
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                          ), // Hint text color
+                        ),
+                        obscureText: true,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    // Confirm Password
+                    SizedBox(
+                      width: 500,
+                      height: 50,
+                      child: TextField(
+                        controller: _confirmPasswordController,
+                        decoration: InputDecoration(
+                          labelText: 'Confirm New Password',
+                          labelStyle: TextStyle(
+                            color: _isDarkMode ? Colors.white70 : Colors.black,
+                          ),
+                          border: UnderlineInputBorder(),
+                          filled: true,
+                          fillColor: _isDarkMode
+                              ? Colors.grey[800]
+                              : Colors.grey[200], // Background color
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                          ), // Hint text color
+                        ),
+                        obscureText: true,
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    // Change Password Button
+                    ElevatedButton(
+                      onPressed: _changePassword,
+                      child: Text(
+                        'Change Password',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                        _isDarkMode ? Colors.blueGrey : Colors.redAccent,
+                        padding: EdgeInsets.symmetric(
+                            vertical: 16.0), // Button padding
+                        textStyle: TextStyle(
+                          fontSize: 16,
+                        ), // Button text style
+                          minimumSize: Size(500, 50)
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 30),
-                // Change Password Button
-                ElevatedButton(
-                  onPressed: _changePassword,
-                  child: Text('Change Password'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    _isDarkMode ? Colors.blueGrey : Colors.redAccent,
-                    padding: EdgeInsets.symmetric(
-                        vertical: 16.0), // Button padding
-                    textStyle: TextStyle(fontSize: 16), // Button text style
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),

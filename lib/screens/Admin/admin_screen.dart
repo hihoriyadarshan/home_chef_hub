@@ -8,8 +8,13 @@ class AdminScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Dashboard'),
-        backgroundColor: Colors.redAccent,
+
+        title: Text('Admin Dashboard',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+            )),
+        backgroundColor: Color(0xFFD32F2F),
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -26,7 +31,7 @@ class AdminScreen extends StatelessWidget {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.redAccent,
+                color: Color(0xFFD32F2F),
               ),
               child: Text(
                 'Menu',
@@ -61,7 +66,7 @@ class AdminScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.fastfood),
+              leading: Icon(Icons.dining),
               title: Text('Create Category'),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
@@ -77,7 +82,7 @@ class AdminScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.fastfood),
+              leading: Icon(Icons.dining),
               title: Text('Manage Category'),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
@@ -92,6 +97,52 @@ class AdminScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/manage-sub_category'); // Use named route for Manage Sub-Category
               },
             ),
+
+
+
+            ListTile(
+              leading: Icon(Icons.lunch_dining),
+              title: Text('View All Dishes'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('All User Booking Details'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
+            ListTile(
+              leading: Icon(Icons.warning),
+              title: Text('Complaint'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
+            ListTile(
+              leading: Icon(Icons.contact_support),
+              title: Text('Contact Us'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+            ListTile(
+              leading: Icon(Icons.feedback_outlined),
+              title: Text('Feedback'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
             ListTile(
               leading: Icon(Icons.person),
               title: Text('Profile'),
@@ -100,13 +151,7 @@ class AdminScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/profile'); // Use named route for Profile
               },
             ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                // Navigate to Settings screen (no named route defined yet)
-              },
-            ),
+
 
             ListTile(
               leading: Icon(Icons.password),
@@ -116,6 +161,16 @@ class AdminScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/change-password');
               },
             ),
+
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
 
             ListTile(
               leading: Icon(Icons.logout),
@@ -134,7 +189,7 @@ class AdminScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Welcome, Admin!',
+              'Welcome, Admin',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -148,14 +203,7 @@ class AdminScreen extends StatelessWidget {
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
                 children: [
-                  _buildDashboardItem(
-                    context,
-                    title: 'View All Dishes',
-                    icon: Icons.analytics,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/manage-dishes');
-                    },
-                  ),
+
                   _buildDashboardItem(
                     context,
                     title: 'Manage Users',
@@ -175,7 +223,7 @@ class AdminScreen extends StatelessWidget {
                   _buildDashboardItem(
                     context,
                     title: 'Create Category',
-                    icon: Icons.fastfood,
+                    icon: Icons.dining,
                     onTap: () {
                       Navigator.pushNamed(context, '/create-category'); // Named route for Create Category
                     },
@@ -191,7 +239,7 @@ class AdminScreen extends StatelessWidget {
                   _buildDashboardItem(
                     context,
                     title: 'Manage Category',
-                    icon: Icons.analytics,
+                    icon: Icons.dining,
                     onTap: () {
                       Navigator.pushNamed(context, '/manage-category'); // Named route for Manage Category
                     },
@@ -199,7 +247,7 @@ class AdminScreen extends StatelessWidget {
                   _buildDashboardItem(
                     context,
                     title: 'Manage Sub-Category',
-                    icon: Icons.analytics,
+                    icon: Icons.fastfood,
                     onTap: () {
                       Navigator.pushNamed(context, '/manage-sub_category'); // Named route for Manage Sub-Category
                     },
@@ -207,16 +255,48 @@ class AdminScreen extends StatelessWidget {
 
                   _buildDashboardItem(
                     context,
+                    title: 'View All Dishes',
+                    icon: Icons.lunch_dining,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/manage-dishes');
+                    },
+                  ),
+
+                  _buildDashboardItem(
+                    context,
                     title: 'All user Booking Details',
-                    icon: Icons.people,
+                    icon: Icons.receipt_long,
                     onTap: () {
                       Navigator.pushNamed(context, '/admin-booking-details'); // Named route for Manage Users
                     },
                   ),
 
+                  _buildDashboardItem(
+                    context,
+                    title: 'Complant',
+                    icon: Icons.warning,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/admin-users-issue'); // Named route for Manage Users
+                    },
+                  ),
 
+                  _buildDashboardItem(
+                    context,
+                    title: 'Contact Us',
+                    icon: Icons.contact_support,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/admin-booking-details'); // Named route for Manage Users
+                    },
+                  ),
 
-
+                  _buildDashboardItem(
+                    context,
+                    title: 'Feedback',
+                    icon: Icons.feedback_outlined,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/admin-booking-details'); // Named route for Manage Users
+                    },
+                  ),
 
                 ],
               ),

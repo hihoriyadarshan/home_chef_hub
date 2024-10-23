@@ -90,6 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           backgroundColor: Color(0xFFD32F2F),
+          automaticallyImplyLeading: false,
         ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

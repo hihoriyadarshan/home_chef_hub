@@ -207,9 +207,25 @@ class _AdminShowAllDishesState extends State<AdminShowAllDishes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('All Dishes'),
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context); // Navigates back to the previous screen
+            },
+          ),
+        title: Text(
+          'All Dishes',
+          style: TextStyle(
+            fontSize: 22,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Color(0xFFD32F2F),
+
       ),
+
+
       body: Column(
         children: [
           // Search bar

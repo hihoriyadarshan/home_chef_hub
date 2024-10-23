@@ -7,22 +7,20 @@ import 'package:home_chef_hub/models/dishes_model.dart'; // Import DishModel
 
 class AdminBookingDetailsScreen extends StatefulWidget {
   @override
-  _AdminBookingDetailsScreenState createState() =>
-      _AdminBookingDetailsScreenState();
+  _AdminBookingDetailsScreenState createState() => _AdminBookingDetailsScreenState();
 }
 
 class _AdminBookingDetailsScreenState extends State<AdminBookingDetailsScreen> {
-  final DatabaseReference _bookingRef =
-  FirebaseDatabase.instance.ref().child('bookings');
-  final DatabaseReference _userRef =
-  FirebaseDatabase.instance.ref().child('users'); // User Reference
-  final DatabaseReference _dishRef =
-  FirebaseDatabase.instance.ref().child('dishes'); // Dish Reference
+  final DatabaseReference _bookingRef = FirebaseDatabase.instance.ref().child('bookings');
+  final DatabaseReference _userRef = FirebaseDatabase.instance.ref().child('users'); // User Reference
+  final DatabaseReference _dishRef = FirebaseDatabase.instance.ref().child('dishes'); // Dish Reference
 
   List<BookingModel> _bookings = [];
+  List<BookingModel> _filteredBookings = [];
   Map<String, UserModel> _userDetails = {}; // Store User Details
   Map<String, DishModel> _dishDetails = {}; // Store Dish Details
   bool _isLoading = true;
+  String _searchText = ''; // Search text variable
 
   @override
   void initState() {
@@ -56,6 +54,7 @@ class _AdminBookingDetailsScreenState extends State<AdminBookingDetailsScreen> {
 
         setState(() {
           _bookings = bookings;
+          _filteredBookings = bookings; // Initialize filtered bookings
           _isLoading = false;
         });
       } else {
@@ -109,42 +108,152 @@ class _AdminBookingDetailsScreenState extends State<AdminBookingDetailsScreen> {
     }
   }
 
+  /// Filter the bookings based on search text
+  void _filterBookings(String searchText) {
+    setState(() {
+      _searchText = searchText.toLowerCase();
+      _filteredBookings = _bookings.where((booking) {
+        final user = _userDetails[booking.userId];
+        final chef = _userDetails[booking.chefId];
+        final dish = _dishDetails[booking.dishId];
+
+        return booking.bookingId.toLowerCase().contains(_searchText) ||
+            (user?.username?.toLowerCase().contains(_searchText) ?? false) ||
+            (chef?.username?.toLowerCase().contains(_searchText) ?? false) ||
+            (dish?.dishName?.toLowerCase().contains(_searchText) ?? false);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Booking Details'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context); // Navigates back to the previous screen
+          },
+        ),
+        title: Text(
+          'Admin Booking Details',
+          style: TextStyle(
+            fontSize: 22,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Color(0xFFD32F2F),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _bookings.isEmpty
-          ? Center(child: Text('No bookings available'))
-          : ListView.builder(
-        itemCount: _bookings.length,
-        itemBuilder: (context, index) {
-          final booking = _bookings[index];
-          final user = _userDetails[booking.userId];
-          final chef = _userDetails[booking.chefId];
-          final dish = _dishDetails[booking.dishId];
-
-          return Card(
-            margin: EdgeInsets.all(10),
-            child: ListTile(
-              title: Text('Booking ID: ${booking.bookingId}'),
-              subtitle: Text(
-                'User: ${user?.username ?? 'Loading...'}\n'
-                    'User Phone: ${user?.phone ?? 'Loading...'}\n'
-                    'Chef: ${chef?.username ?? 'Loading...'}\n'
-                    'Chef Phone: ${chef?.phone ?? 'Loading...'}\n'
-                    'Dish: ${dish?.dishName ?? 'Loading...'}\n'
-                    'Date: ${booking.bookingDate}\n'
-                    'Status: ${booking.status}\n'
-                    'Total Amount: \$${booking.totalAmount.toStringAsFixed(2)}',
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              onChanged: _filterBookings,
+              decoration: InputDecoration(
+                labelText: 'Search Bookings',
+                border: OutlineInputBorder(),
+                suffixIcon: Icon(Icons.search),
               ),
-              isThreeLine: true,
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : _filteredBookings.isEmpty
+                ? Center(child: Text('No bookings available'))
+                : ListView.builder(
+              itemCount: _filteredBookings.length,
+              itemBuilder: (context, index) {
+                final booking = _filteredBookings[index];
+                final user = _userDetails[booking.userId];
+                final chef = _userDetails[booking.chefId];
+                final dish = _dishDetails[booking.dishId];
+
+                return Card(
+                  margin: EdgeInsets.all(10),
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Booking ID: ${booking.bookingId}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'User: ${user?.username ?? 'Loading...'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'User Phone: ${user?.phone ?? 'Loading...'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Chef: ${chef?.username ?? 'Loading...'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Chef Phone: ${chef?.phone ?? 'Loading...'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Dish: ${dish?.dishName ?? 'Loading...'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Date: ${booking.bookingDate}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Status: ${booking.status}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Total Amount: \$${booking.totalAmount.toStringAsFixed(2)}',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 10), // Space between details and image
+                        Expanded(
+                          flex: 1,
+                          child: dish?.dishImageUrl != null
+                              ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              dish!.dishImageUrl!,
+                              height: 200, // Set the height as per your design,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                              : Container(
+                            height: 120,
+                            color: Colors.grey[300], // Placeholder if image is not available
+                            child: Center(child: Text('No Image')),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

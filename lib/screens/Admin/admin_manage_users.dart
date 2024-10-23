@@ -10,7 +10,9 @@ class AdminManageUserScreen extends StatefulWidget {
 class _AdminManageUserScreenState extends State<AdminManageUserScreen> {
   final DatabaseReference _userRef = FirebaseDatabase.instance.ref('users');
   List<UserModel> _userList = [];
+  List<UserModel> _filteredUserList = [];
   bool _isLoading = true;
+  String _searchText = '';
 
   @override
   void initState() {
@@ -40,6 +42,9 @@ class _AdminManageUserScreenState extends State<AdminManageUserScreen> {
         })
             .where((user) => user.role != null && user.role!.toLowerCase() == 'user') // Filter users with role 'User'
             .toList();
+
+        // Initialize filtered list with all users
+        _filteredUserList = _userList;
 
         // Debugging: Print the filtered user list
         print('Filtered user list (role = User): $_userList');
@@ -88,45 +93,91 @@ class _AdminManageUserScreenState extends State<AdminManageUserScreen> {
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: user.profilePhotoUrl != null
-                      ? NetworkImage(user.profilePhotoUrl!)
-                      : AssetImage('assets/default_profile.png') as ImageProvider, // Default image if profile photo is null
+          child: Center(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              elevation: 8,
+              color: Colors.red, // Red background for the card
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: user.profilePhotoUrl != null
+                            ? NetworkImage(user.profilePhotoUrl!)
+                            : AssetImage('assets/default_profile.png') as ImageProvider, // Default image if profile photo is null
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Username: ${user.username}',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), // White text
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Email: ${user.email}',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Phone: ${user.phone}',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Address: ${user.address}',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Date of Birth: ${user.dob}',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Status: ${user.status}',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Role: ${user.role}',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    SizedBox(height: 8),
+                  ],
                 ),
               ),
-              SizedBox(height: 16),
-              Text('Username: ${user.username}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
-              Text('Email: ${user.email}', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 8),
-              Text('Phone: ${user.phone}', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 8),
-              Text('Address: ${user.address}', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 8),
-              Text('Date of Birth: ${user.dob}', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 8),
-              Text('Status: ${user.status}', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 8),
-              Text('Role: ${user.role}', style: TextStyle(fontSize: 16)),
-            ],
+            ),
           ),
         );
       },
     );
   }
 
+  /// Filter the user list based on search text
+  void _filterUsers(String searchText) {
+    setState(() {
+      _searchText = searchText.toLowerCase();
+      _filteredUserList = _userList.where((user) {
+        return user.username!.toLowerCase().contains(_searchText) ||
+            user.email!.toLowerCase().contains(_searchText);
+      }).toList();
+    });
+  }
+
   /// Build list of users with options to update status, delete the account, or view details
   Widget _buildUserList() {
     return ListView.builder(
-      itemCount: _userList.length,
+      itemCount: _filteredUserList.length,
       itemBuilder: (context, index) {
-        final user = _userList[index];
+        final user = _filteredUserList[index];
+
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: ListTile(
@@ -176,14 +227,41 @@ class _AdminManageUserScreenState extends State<AdminManageUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Users'),
-        backgroundColor: Colors.red,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context); // Navigates back to the previous screen
+          },
+        ),
+        title: Text('Manage Users',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+            )),
+        backgroundColor: Color(0xFFD32F2F),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _userList.isEmpty
-          ? Center(child: Text('No users found.'))
-          : _buildUserList(),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              onChanged: _filterUsers,
+              decoration: InputDecoration(
+                labelText: 'Search Users',
+                border: OutlineInputBorder(),
+                suffixIcon: Icon(Icons.search),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : _filteredUserList.isEmpty
+                ? Center(child: Text('No users found.'))
+                : _buildUserList(),
+          ),
+        ],
+      ),
     );
   }
 }

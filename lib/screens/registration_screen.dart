@@ -191,6 +191,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ),
         backgroundColor: Color(0xFFD32F2F),
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
