@@ -18,16 +18,18 @@ class _HomeScreenState extends State<HomeScreen> {
   int _displayedCategories = 6;
   final TextEditingController _searchController = TextEditingController();
 
-  // Page controller for the promotional image slider
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // Images for the slider from assets
   final List<String> _sliderImages = [
     'assets/slicer1.png',
     'assets/slicer2.png',
     'assets/slicer3.png',
   ];
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _messageController = TextEditingController();
 
   @override
   void initState() {
@@ -35,17 +37,18 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchCategories();
     Future.delayed(Duration(seconds: 3), _autoSlide);
 
-    // Add listener to update the search result when user types
     _searchController.addListener(_filterCategories);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _messageController.dispose();
     super.dispose();
   }
 
-  // Auto-slide the promotional slider every 3 seconds
   void _autoSlide() {
     if (_currentPage < _sliderImages.length - 1) {
       _currentPage++;
@@ -68,10 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (data != null) {
         setState(() {
           _categories = data.values
-              .map((value) =>
-              CategoryModel.fromMap(Map<String, dynamic>.from(value)))
+              .map((value) => CategoryModel.fromMap(Map<String, dynamic>.from(value)))
               .toList();
-          _filteredCategories = _categories; // Initialize the filtered list
+          _filteredCategories = _categories;
         });
       } else {
         setState(() {
@@ -89,7 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Filter categories based on search input
   void _filterCategories() {
     final query = _searchController.text.toLowerCase();
     setState(() {
@@ -97,8 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _filteredCategories = _categories;
       } else {
         _filteredCategories = _categories
-            .where((category) =>
-            category.category.toLowerCase().contains(query))
+            .where((category) => category.category.toLowerCase().contains(query))
             .toList();
       }
     });
@@ -110,83 +110,83 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _submitContactForm() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final message = _messageController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || message.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill out all fields')),
+      );
+      return;
+    }
+
+    try {
+      await _database.ref().child('contacts').push().set({
+        'name': name,
+        'email': email,
+        'message': message,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Thank you for contacting us!')),
+      );
+
+      _nameController.clear();
+      _emailController.clear();
+      _messageController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting form. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isWideScreen = MediaQuery.of(context).size.width > 600;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Chef HUB',
-          style: TextStyle(
-          fontSize: 30,
-          color: Colors.white,
-        ),
+        title: Text(
+          'Home Chef HUB',
+          style: TextStyle(fontSize: 30, color: Colors.white),
         ),
         backgroundColor: Color(0xFFD32F2F),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(8),
-          child: Padding(
-            padding: const EdgeInsets.all(0),
-
-          ),
-        ),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.red,
-              ),
+              decoration: BoxDecoration(color: Color(0xFFD32F2F)),
               child: Text(
                 'HCF',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
+              leading: Icon(Icons.home, color: Colors.red),
+              title: Text('Home', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: Icon(Icons.category),
-              title: Text('Profile'),
+              leading: Icon(Icons.category, color: Colors.red),
+              title: Text('Profile', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/profile');
               },
             ),
             ListTile(
-              leading: Icon(Icons.help),
-              title: Text('Help & FAQ'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(
-                  context,
-                  '/HelpFaqScreen',
-                  arguments: 'YourUserIdHere', // Pass the actual userId here
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.password),
-              title: Text('Change Password'),
+              leading: Icon(Icons.help, color: Colors.red),
+              title: Text('Help & FAQ', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/change-password');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/login');
+                Navigator.pushNamed(context, '/HelpFaqScreen');
               },
             ),
           ],
@@ -195,9 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Food Category Slider using asset images
             Container(
-              height: 300, // Height increased for larger visibility
+              height: 300,
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: _sliderImages.length,
@@ -216,36 +215,23 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 30),
-            // Category Grid Section
             _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : _isError
-                ? Center(
-              child: Text(
-                'Error loading categories',
-                style: TextStyle(fontSize: 18, color: Colors.red),
-              ),
-            )
+                ? Center(child: Text('Error loading categories'))
                 : _filteredCategories.isEmpty
-                ? Center(
-              child: Text(
-                'No categories available',
-                style: TextStyle(fontSize: 18),
-              ),
-            )
+                ? Center(child: Text('No categories available'))
                 : GridView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(10),
-              gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: isWideScreen ? 3 : 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 3 / 2,
               ),
-              itemCount: _displayedCategories >
-                  _filteredCategories.length
+              itemCount: _displayedCategories > _filteredCategories.length
                   ? _filteredCategories.length
                   : _displayedCategories,
               itemBuilder: (context, index) {
@@ -257,20 +243,15 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton(
-                  onPressed: _viewMoreCategories,
-                  child: Text('View More'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    backgroundColor: Color(0xFFD32F2F),
                   ),
+                  onPressed: _viewMoreCategories,
+                  child: Text('View More', style: TextStyle(color: Colors.white)),
                 ),
               ),
             SizedBox(height: 30),
 
-            // Chef Cooking at Home Section
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Column(
@@ -378,11 +359,77 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+
+
+
+            SizedBox(height: 30),
+
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Contact Us',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFFD32F2F)),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _messageController,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: 'Message',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFD32F2F), // Red background
+                      ),
+                      onPressed: _submitContactForm,
+                      child: Text('Submit', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
-
     );
+
   }
 }
 
@@ -402,6 +449,8 @@ class _HoverCardState extends State<HoverCard> {
       _isHovered = isHovered;
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -440,7 +489,7 @@ class _HoverCardState extends State<HoverCard> {
                     padding: EdgeInsets.all(8),
                     child: Text(
                       widget.category.category,
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   ),
                 ],

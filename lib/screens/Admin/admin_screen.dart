@@ -285,7 +285,7 @@ class AdminScreen extends StatelessWidget {
                     title: 'Contact Us',
                     icon: Icons.contact_support,
                     onTap: () {
-                      Navigator.pushNamed(context, '/admin-booking-details'); // Named route for Manage Users
+                      Navigator.pushNamed(context, '/Admin-contact'); // Named route for Manage Users
                     },
                   ),
 

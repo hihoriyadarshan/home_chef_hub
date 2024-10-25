@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-// import 'firebase_options.dart';
+import 'package:home_chef_hub/screens/Admin/Admin_contact_us_screen.dart';
 import 'package:home_chef_hub/screens/Admin/admin_booking_details.dart';
 import 'package:home_chef_hub/screens/Admin/admin_chef_manage.dart';
 import 'package:home_chef_hub/screens/Admin/admin_manage_users.dart';
@@ -79,6 +79,7 @@ class MyApp extends StatelessWidget {
         '/admin-booking-details': (context) => AdminBookingDetailsScreen(),
         '/admin-users-issue': (context) => AdminUsersIssue(complaints: []), // Placeholder for now
         '/chefDishes': (context) => MyDishesScreen(),
+        '/Admin-contact': (context) => AdminContactUsScreen(),
 
 
         '/HelpFaqScreen': (context) {

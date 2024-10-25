@@ -129,12 +129,7 @@ class _AdminBookingDetailsScreenState extends State<AdminBookingDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context); // Navigates back to the previous screen
-          },
-        ),
+
         title: Text(
           'Admin Booking Details',
           style: TextStyle(
@@ -144,6 +139,166 @@ class _AdminBookingDetailsScreenState extends State<AdminBookingDetailsScreen> {
         ),
         backgroundColor: Color(0xFFD32F2F),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFFD32F2F),
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.analytics),
+              title: Text('DashBoard'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushReplacementNamed(context, '/Admin-dashboard'); // Use named route for Admin Dashboard
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.people),
+              title: Text('Manage user'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(context, '/manage-user'); // Use named route for Manage Users
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.restaurant_menu),
+              title: Text('Manage Chef'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(context, '/manage-chef'); // Use named route for Manage Chefs
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.dining),
+              title: Text('Create Category'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(context, '/create-category'); // Use named route for Create Category
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.fastfood),
+              title: Text('Create Sub-Category'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(context, '/create-sub_category'); // Use named route for Create Sub-Category
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.dining),
+              title: Text('Manage Category'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(context, '/manage-category'); // Use named route for Manage Category
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.fastfood),
+              title: Text('Manage Sub-Category'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(context, '/manage-sub_category'); // Use named route for Manage Sub-Category
+              },
+            ),
+
+
+
+            ListTile(
+              leading: Icon(Icons.lunch_dining),
+              title: Text('View All Dishes'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('All User Booking Details'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
+            ListTile(
+              leading: Icon(Icons.warning),
+              title: Text('Complaint'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
+            ListTile(
+              leading: Icon(Icons.contact_support),
+              title: Text('Contact Us'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+            ListTile(
+              leading: Icon(Icons.feedback_outlined),
+              title: Text('Feedback'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushNamed(context, '/profile'); // Use named route for Profile
+              },
+            ),
+
+
+            ListTile(
+              leading: Icon(Icons.password),
+              title: Text('Change Password'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/change-password');
+              },
+            ),
+
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Navigate to Settings screen (no named route defined yet)
+              },
+            ),
+
+
+
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () async {
+                await FirebaseAuth.instance.signOut(); // Sign out from Firebase
+                Navigator.pushReplacementNamed(context, '/login'); // Use named route for login screen
+              },
+            ),
+          ],
+        ),
+      ),
+
+
       body: Column(
         children: [
           Padding(
