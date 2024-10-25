@@ -4,7 +4,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.redAccent, // Background color similar to the image
+      backgroundColor: Colors.red, // Background color similar to the image
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -13,8 +13,8 @@ class WelcomeScreen extends StatelessWidget {
             Container(
               child: Image.asset(
                 'assets/chef_logo.png', // Correct relative path to the asset
-                width: 100,
-                height: 100,
+                width: 150,
+                height: 150,
               ),
             ),
             SizedBox(height: 20),

@@ -50,7 +50,7 @@ class _ChefBookingScreenState extends State<ChefBookingScreen> {
       isLoading = false;
     });
 
-    // Show a confirmation message
+    // Show a confirmation dialog with Pay button
     showDialog(
       context: context,
       builder: (context) {
@@ -65,10 +65,25 @@ class _ChefBookingScreenState extends State<ChefBookingScreen> {
               },
               child: Text('OK'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to payment screen or handle payment process here
+                Navigator.pop(context); // Close the dialog
+                _initiatePayment(); // Call the payment initiation function
+              },
+              child: Text('Pay'),
+            ),
           ],
         );
       },
     );
+  }
+
+  // Function to handle payment logic
+  void _initiatePayment() {
+    // Implement payment initiation code here
+    // This could be a navigation to a payment screen or integration with a payment API
+    print("Payment process initiated");
   }
 
   @override
