@@ -9,6 +9,7 @@ import 'package:home_chef_hub/screens/Admin/admin_manage_users.dart';
 import 'package:home_chef_hub/screens/Admin/admin_show_all_dish.dart';
 import 'package:home_chef_hub/screens/Admin/category_screen.dart';
 import 'package:home_chef_hub/screens/Admin/sub-category_screen.dart';
+import 'package:home_chef_hub/screens/Chef_Screen/blog_screen.dart';
 import 'package:home_chef_hub/screens/Chef_Screen/mydish_screen.dart';
 import 'package:home_chef_hub/screens/user/help_faq_screen.dart';
 import './screens/WelcomeScreen.dart';
@@ -79,6 +80,9 @@ class MyApp extends StatelessWidget {
         '/admin-booking-details': (context) => AdminBookingDetailsScreen(),
         '/admin-users-issue': (context) => AdminUsersIssue(complaints: []), // Placeholder for now
         '/chefDishes': (context) => MyDishesScreen(),
+        '/blog': (context) => BlogScreen(),
+
+
         '/Admin-contact': (context) => AdminContactUsScreen(),
 
 

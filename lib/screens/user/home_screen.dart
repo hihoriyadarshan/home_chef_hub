@@ -189,6 +189,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(context, '/HelpFaqScreen');
               },
             ),
+
+            ListTile(
+              leading: Icon(Icons.help, color: Colors.red),
+              title: Text('Logout', style: TextStyle(color: Colors.black)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/login');
+              },
+            ),
+
           ],
         ),
       ),

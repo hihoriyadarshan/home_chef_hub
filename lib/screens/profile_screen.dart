@@ -104,7 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   clipper: WaveClipper(),
                   child: Container(
                     height: 200,
-                    color: Color(0xFF00CFFF), // The wave background color
+                    color: Colors.red, // The wave background color
                   ),
                 ),
                 Align(
