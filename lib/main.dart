@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:home_chef_hub/screens/Admin/Admin_contact_us_screen.dart';
 import 'package:home_chef_hub/screens/Admin/admin_booking_details.dart';
 import 'package:home_chef_hub/screens/Admin/admin_chef_manage.dart';
+import 'package:home_chef_hub/screens/Admin/admin_complaints_screen.dart';
 import 'package:home_chef_hub/screens/Admin/admin_manage_users.dart';
 import 'package:home_chef_hub/screens/Admin/admin_show_all_dish.dart';
 import 'package:home_chef_hub/screens/Admin/category_screen.dart';
@@ -78,11 +79,9 @@ class MyApp extends StatelessWidget {
         '/change-password': (context) => ChangePasswordScreen(),
         '/manage-dishes': (context) => AdminShowAllDishes(),
         '/admin-booking-details': (context) => AdminBookingDetailsScreen(),
-        '/admin-users-issue': (context) => AdminUsersIssue(complaints: []), // Placeholder for now
+        '/admin-users-issue': (context) => AdminComplaintsScreen(), // Placeholder for now
         '/chefDishes': (context) => MyDishesScreen(),
         '/blog': (context) => BlogScreen(),
-
-
         '/Admin-contact': (context) => AdminContactUsScreen(),
 
 
