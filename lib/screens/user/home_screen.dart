@@ -190,6 +190,16 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
+    ListTile(
+    leading: Icon(Icons.help, color: Colors.red),
+    title: Text('My Booking', style: TextStyle(color: Colors.black)),
+    onTap: () {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, '/mybooking');
+    },
+    ),
+
+
             ListTile(
               leading: Icon(Icons.help, color: Colors.red),
               title: Text('Logout', style: TextStyle(color: Colors.black)),

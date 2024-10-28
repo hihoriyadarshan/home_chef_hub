@@ -13,6 +13,7 @@ import 'package:home_chef_hub/screens/Admin/sub-category_screen.dart';
 import 'package:home_chef_hub/screens/Chef_Screen/blog_screen.dart';
 import 'package:home_chef_hub/screens/Chef_Screen/mydish_screen.dart';
 import 'package:home_chef_hub/screens/user/help_faq_screen.dart';
+import 'package:home_chef_hub/screens/user/my_booking_screen.dart';
 import './screens/WelcomeScreen.dart';
 import './screens/login_screen.dart';
 import './screens/registration_screen.dart';
@@ -83,6 +84,17 @@ class MyApp extends StatelessWidget {
         '/chefDishes': (context) => MyDishesScreen(),
         '/blog': (context) => BlogScreen(),
         '/Admin-contact': (context) => AdminContactUsScreen(),
+
+
+    '/mybooking': (context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+    return MyBookingScreen(userId: user.uid); // Pass user ID
+    } else {
+    return LoginScreen(); // Redirect to login if unauthenticated
+    }
+    },
+
 
 
         '/HelpFaqScreen': (context) {
