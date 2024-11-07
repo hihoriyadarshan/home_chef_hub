@@ -7,7 +7,8 @@ class UserModel {
   final String address;
   final String? profilePhotoUrl;
   final String? role;
-  final String status; // Add this field for status ('active', 'suspended', 'disabled')
+  final String status;
+  final double balance;
 
   UserModel({
     required this.uid,
@@ -18,7 +19,8 @@ class UserModel {
     required this.address,
     this.profilePhotoUrl,
     this.role,
-    this.status = 'active', // Default status is 'active'
+    this.status = 'active',
+    this.balance = 0.0,
   });
 
   Map<String, dynamic> toMap() {
@@ -31,21 +33,23 @@ class UserModel {
       'address': address,
       'profilePhotoUrl': profilePhotoUrl,
       'role': role,
-      'status': status, // Include status in the map
+      'status': status,
+      'balance': balance,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      uid: map['uid'],
-      username: map['username'],
-      email: map['email'],
-      dob: map['dob'],
-      phone: map['phone'],
-      address: map['address'],
-      profilePhotoUrl: map['profilePhotoUrl'],
-      role: map['role'],
-      status: map['status'] ?? 'active', // Default to 'active' if not present
+      uid: map['uid'] as String,
+      username: map['username'] as String,
+      email: map['email'] as String,
+      dob: map['dob'] as String,
+      phone: map['phone'] as String,
+      address: map['address'] as String,
+      profilePhotoUrl: map['profilePhotoUrl'] as String?,
+      role: map['role'] as String?,
+      status: map['status'] as String? ?? 'active',
+      balance: (map['balance'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Home Chef HUB',
+          'Home Chef Hub',
           style: TextStyle(fontSize: 30, color: Colors.white),
         ),
         backgroundColor: Color(0xFFD32F2F),
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
             DrawerHeader(
               decoration: BoxDecoration(color: Color(0xFFD32F2F)),
               child: Text(
-                'HCF',
+                'Home Chef Hub',
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
@@ -174,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.category, color: Colors.red),
+              leading: Icon(Icons.account_box, color: Colors.red),
               title: Text('Profile', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pop(context);
@@ -189,32 +189,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(context, '/HelpFaqScreen');
               },
             ),
-
-    ListTile(
-    leading: Icon(Icons.help, color: Colors.red),
-    title: Text('My Booking', style: TextStyle(color: Colors.black)),
-    onTap: () {
-    Navigator.pop(context);
-    Navigator.pushNamed(context, '/mybooking');
-    },
-    ),
-
-
             ListTile(
-              leading: Icon(Icons.help, color: Colors.red),
+              leading: Icon(Icons.wallet_outlined, color: Colors.red),
+              title: Text('Add Funds', style: TextStyle(color: Colors.black)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/balance');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.account_balance_rounded, color: Colors.red),
+              title: Text('My Booking', style: TextStyle(color: Colors.black)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/mybooking');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.account_box_outlined, color: Colors.red),
               title: Text('Logout', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/login');
               },
             ),
-
           ],
         ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Slider section
             Container(
               height: 300,
               child: PageView.builder(
@@ -270,273 +275,55 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text('View More', style: TextStyle(color: Colors.white)),
                 ),
               ),
-            SizedBox(height: 30),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Chef Cooking at Home',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      // Chef Cooking Image from assets
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          height: 180,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              // image: AssetImage('assets/chef_cooking.png'),
-                              image: AssetImage('assets/chef_cooking.png'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      // Chef Cooking Description
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Experience the Art of Cooking',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Bring the magic of a professional chef to your kitchen. '
-                                  'Our chefs prepare delicious meals that you can enjoy in the comfort of your home. '
-                                  'From traditional dishes to modern cuisine, experience the joy of home-cooked meals without the hassle.',
-                              style: TextStyle(fontSize: 16),
-                              textAlign: TextAlign.left,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  // New Section for Featured Chefs
-                  Text(
-                    'Featured Chefs',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    height: 150, // For horizontal scrolling
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 5, // Example count
-                      itemBuilder: (context, index) {
-                        return Container(
-                          width: 120,
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.grey[200],
-                            image: DecorationImage(
-                              image: AssetImage('assets/chef${index + 1}.png'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Chef ${index + 1}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  backgroundColor: Colors.black54,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-
-
-            SizedBox(height: 30),
-
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Contact Us',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFFD32F2F)),
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: _messageController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        labelText: 'Message',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFD32F2F), // Red background
-                      ),
-                      onPressed: _submitContactForm,
-                      child: Text('Submit', style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
-
   }
 }
 
-class HoverCard extends StatefulWidget {
+class HoverCard extends StatelessWidget {
   final CategoryModel category;
   const HoverCard({required this.category});
 
   @override
-  _HoverCardState createState() => _HoverCardState();
-}
-
-class _HoverCardState extends State<HoverCard> {
-  bool _isHovered = false;
-
-  void _onHover(bool isHovered) {
-    setState(() {
-      _isHovered = isHovered;
-    });
-  }
-
-
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CategoryDetailsScreen(
-              categoryId: widget.category.cid,
-              categoryName: widget.category.category,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CategoryDetailsScreen(
+                categoryId: category.cid,
+                categoryName: category.category,
+              ),
             ),
+          );
+        },
+        child: Card(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-        );
-      },
-      child: MouseRegion(
-        onEnter: (_) => _onHover(true),
-        onExit: (_) => _onHover(false),
-        child: Stack(
-          children: [
-            Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Image.network(
-                      widget.category.categoryPhotoUrl ?? '',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      widget.category.category,
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (_isHovered)
-              Positioned.fill(
-                child: AnimatedOpacity(
-                  opacity: _isHovered ? 0.5 : 1.0,
-                  duration: Duration(milliseconds: 300),
-                  child: Container(
-                    color: Colors.black,
-                    child: Center(
-                      child: Text(
-                        widget.category.category,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
+          child: Column(
+            children: <Widget>[
+          Expanded(
+          child: Image.network(
+          category.categoryPhotoUrl ?? '',
+            fit: BoxFit.cover,
+            width: double.infinity,
+          ),
         ),
-      ),
+        Container(
+        padding: EdgeInsets.all(8),
+    child: Text(
+    category.category,
+    style: TextStyle(fontSize: 16, color: Colors.black),
+    ),
+        ),
+    ],
+    ),
+    ),
     );
   }
 }

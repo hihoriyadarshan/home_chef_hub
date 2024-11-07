@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:uuid/uuid.dart';
-import '../../models/Booking_model.dart';
+import '../../models/booking_model.dart';
 
 class ChefBookingScreen extends StatefulWidget {
-  final String userId; // The ID of the user booking the chef
-  final String chefId; // The ID of the chef being booked
-  final String dishId; // The ID of the dish being booked
+  final String userId; // User booking the chef
+  final String chefId; // Chef being booked
+  final String dishId; // Dish being booked
   final double totalAmount; // Total amount for the dish
 
   ChefBookingScreen({
@@ -21,18 +21,39 @@ class ChefBookingScreen extends StatefulWidget {
 }
 
 class _ChefBookingScreenState extends State<ChefBookingScreen> {
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();
+  final Uuid _uuid = Uuid();
   bool isLoading = false;
+  double? userBalance;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserBalance();
+  }
+
+  Future<void> _fetchUserBalance() async {
+    final userRef = _database.child('users/${widget.userId}/balance');
+    final snapshot = await userRef.get();
+
+    setState(() {
+      userBalance = snapshot.exists ? double.parse(snapshot.value.toString()) : 0.0;
+    });
+  }
 
   Future<void> _bookChef() async {
+    if (userBalance == null || userBalance! < widget.totalAmount) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Insufficient balance. Please add funds.")),
+      );
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
 
-    // Generate a unique booking ID
-    String bookingId = Uuid().v4();
-
-    // Create a booking model instance
+    String bookingId = _uuid.v4();
     BookingModel booking = BookingModel(
       bookingId: bookingId,
       userId: widget.userId,
@@ -43,47 +64,42 @@ class _ChefBookingScreenState extends State<ChefBookingScreen> {
       totalAmount: widget.totalAmount,
     );
 
-    // Save the booking data to Firebase
-    await _database.ref().child('bookings').child(bookingId).set(booking.toMap());
+    try {
+      final newBalance = userBalance! - widget.totalAmount;
+      await _database.child('users/${widget.userId}/balance').set(newBalance);
+      await _database.child('bookings').child(bookingId).set(booking.toMap());
 
-    setState(() {
-      isLoading = false;
-    });
+      setState(() {
+        userBalance = newBalance;
+        isLoading = false;
+      });
 
-    // Show a confirmation dialog with Pay button
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Booking Confirmed'),
-          content: Text('Your booking has been successfully made!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-                Navigator.pop(context); // Go back to the previous screen
-              },
-              child: Text('OK'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to payment screen or handle payment process here
-                Navigator.pop(context); // Close the dialog
-                _initiatePayment(); // Call the payment initiation function
-              },
-              child: Text('Pay'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Function to handle payment logic
-  void _initiatePayment() {
-    // Implement payment initiation code here
-    // This could be a navigation to a payment screen or integration with a payment API
-    print("Payment process initiated");
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Booking Confirmed'),
+            content: Text('Your booking has been successfully made!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Booking failed. Please try again.")),
+      );
+    }
   }
 
   @override
@@ -107,14 +123,26 @@ class _ChefBookingScreenState extends State<ChefBookingScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
             ),
             SizedBox(height: 20),
-            isLoading
+            userBalance == null
                 ? Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-              onPressed: _bookChef,
-              child: Text('Confirm Booking'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-              ),
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Your Balance: \$${userBalance!.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+                isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : ElevatedButton(
+                  onPressed: userBalance! >= widget.totalAmount ? _bookChef : null,
+                  child: Text('Confirm Booking'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
