@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
         '/Admin-contact': (context) => AdminContactUsScreen(),
         '/balance': (context) => BalanceScreen(),
         '/analytics': (context) => AnalyticsScreen(),
-        '/chef-my-bookings': (context) => ChefMyBookingScreen(chefId: FirebaseAuth.instance.currentUser?.uid ?? ''),
+        '/chef-my-bookings': (context) => MyBookingsPage(chefId: FirebaseAuth.instance.currentUser?.uid ?? ''),
 
 
         '/mybooking': (context) {

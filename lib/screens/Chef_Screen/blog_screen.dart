@@ -10,89 +10,66 @@ class BlogScreen extends StatelessWidget {
         title: Text('All Blogs'),
         backgroundColor: Colors.red,
       ),
-      body: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(16.0),
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('blogs').snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('blogs').orderBy('timestamp', descending: true).snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
 
-            return ListView(
-              children: snapshot.data!.docs.map((doc) {
-                final blog = BlogModel.fromMap(doc.data() as Map<String, dynamic>);
-                return BlogCard(blog: blog);
-              }).toList(),
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Text('No blogs available', style: TextStyle(color: Colors.grey)),
             );
-          },
-        ),
-      ),
-    );
-  }
-}
+          }
 
-class BlogCard extends StatelessWidget {
-  final BlogModel blog;
-  BlogCard({required this.blog});
+          return ListView(
+            children: snapshot.data!.docs.map((doc) {
+              final blog = BlogModel.fromMap(doc.data() as Map<String, dynamic>);
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            blog.blogImageUrl != null
-                ? Image.network(
-              blog.blogImageUrl!,
-              height: 100,
-              width: 100,
-              fit: BoxFit.cover,
-            )
-                : Container(
-              height: 100,
-              width: 100,
-              color: Colors.grey[300],
-              child: Icon(Icons.image, color: Colors.grey),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      blog.blogTitle,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                        fontSize: 16,
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        blog.blogTitle,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      blog.blogContent,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
+                      SizedBox(height: 5),
+                      Text(
+                        blog.blogContent,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                      SizedBox(height: 10),
+                      blog.blogImageUrl != null
+                          ? Image.network(
+                        blog.blogImageUrl!,
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                          : SizedBox.shrink(),
+                      SizedBox(height: 5),
+                      Text(
+                        'Posted on ${blog.timestamp.toLocal()}',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                ),
+              );
+            }).toList(),
+          );
+        },
       ),
     );
   }
