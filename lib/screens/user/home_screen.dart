@@ -71,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (data != null) {
         setState(() {
           _categories = data.values
-              .map((value) => CategoryModel.fromMap(Map<String, dynamic>.from(value)))
+              .map((value) =>
+              CategoryModel.fromMap(Map<String, dynamic>.from(value)))
               .toList();
           _filteredCategories = _categories;
         });
@@ -98,7 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _filteredCategories = _categories;
       } else {
         _filteredCategories = _categories
-            .where((category) => category.category.toLowerCase().contains(query))
+            .where((category) =>
+            category.category.toLowerCase().contains(query))
             .toList();
       }
     });
@@ -118,6 +120,15 @@ class _HomeScreenState extends State<HomeScreen> {
     if (name.isEmpty || email.isEmpty || message.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill out all fields')),
+      );
+      return;
+    }
+
+    // Validate email format
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a valid email address')),
       );
       return;
     }
@@ -150,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Home Chef Hub',
+          'Home Chef HUB',
           style: TextStyle(fontSize: 30, color: Colors.white),
         ),
         backgroundColor: Color(0xFFD32F2F),
@@ -206,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.account_box_outlined, color: Colors.red),
+              leading: Icon(Icons.logout_sharp, color: Colors.red),
               title: Text('Logout', style: TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pop(context);
@@ -219,7 +230,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Slider section
             Container(
               height: 300,
               child: PageView.builder(
@@ -268,13 +278,281 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFD32F2F),
-                  ),
                   onPressed: _viewMoreCategories,
-                  child: Text('View More', style: TextStyle(color: Colors.white)),
+                  child: Text('View More'),
                 ),
               ),
+            SizedBox(height: 30),
+
+
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Chef Cooking at Home',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      // Chef Cooking Image from assets
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 180,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              // image: AssetImage('assets/chef_cooking.png'),
+                              image: AssetImage('assets/chef_cooking.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      // Chef Cooking Description
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Experience the Art of Cooking',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Bring the magic of a professional chef to your kitchen. '
+                                  'Our chefs prepare delicious meals that you can enjoy in the comfort of your home. '
+                                  'From traditional dishes to modern cuisine, experience the joy of home-cooked meals without the hassle.',
+                              style: TextStyle(fontSize: 16),
+                              textAlign: TextAlign.left,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  // New Section for Featured Chefs
+                  // New Section for Featured Chefs
+                  Text(
+                    'Featured Chefs',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    height: 150, // For horizontal scrolling
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        // Each Container uses a specific asset image for each chef
+                        Container(
+                          width: 120,
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.grey[200],
+                            image: DecorationImage(
+                              // image: AssetImage('assets/chef_cooking.png'),
+                              image: AssetImage('assets/C1.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 120,
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.grey[200],
+                            image: DecorationImage(
+                              image: AssetImage('assets/c2.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 120,
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.grey[200],
+                            image: DecorationImage(
+                              image: AssetImage('assets/c3.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 120,
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.grey[200],
+                            image: DecorationImage(
+                              image: AssetImage('assets/c4.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 120,
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.grey[200],
+                            image: DecorationImage(
+                              image: AssetImage('assets/c5.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+
+
+            SizedBox(height: 30),
+
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Color(0xFFFFEBEE), // Light red background
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2), // Light shadow for subtle depth
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: Colors.white, // White border
+                    width: 2,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Contact Us',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _messageController,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: 'Message',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFD32F2F),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                        onPressed: _submitContactForm,
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            ,
+
           ],
         ),
       ),
@@ -282,48 +560,88 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HoverCard extends StatelessWidget {
+class HoverCard extends StatefulWidget {
   final CategoryModel category;
   const HoverCard({required this.category});
 
   @override
+  _HoverCardState createState() => _HoverCardState();
+}
+
+class _HoverCardState extends State<HoverCard> {
+  bool _isHovered = false;
+
+  void _onHover(bool isHovered) {
+    setState(() {
+      _isHovered = isHovered;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CategoryDetailsScreen(
-                categoryId: category.cid,
-                categoryName: category.category,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CategoryDetailsScreen(
+              categoryId: widget.category.cid,
+              categoryName: widget.category.category,
+            ),
+          ),
+        );
+      },
+      child: MouseRegion(
+        onEnter: (_) => _onHover(true),
+        onExit: (_) => _onHover(false),
+        child: Stack(
+          children: [
+            Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Image.network(
+                      widget.category.categoryPhotoUrl ?? '',
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      widget.category.category,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-        child: Card(
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            children: <Widget>[
-          Expanded(
-          child: Image.network(
-          category.categoryPhotoUrl ?? '',
-            fit: BoxFit.cover,
-            width: double.infinity,
-          ),
+            if (_isHovered)
+              Positioned.fill(
+                child: AnimatedOpacity(
+                  opacity: _isHovered ? 0.5 : 1.0,
+                  duration: Duration(milliseconds: 300),
+                  child: Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: Text(
+                        widget.category.category,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
-        Container(
-        padding: EdgeInsets.all(8),
-    child: Text(
-    category.category,
-    style: TextStyle(fontSize: 16, color: Colors.black),
-    ),
-        ),
-    ],
-    ),
-    ),
+      ),
     );
   }
 }
