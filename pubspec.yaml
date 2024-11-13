@@ -51,7 +51,7 @@ dependencies:
   carousel_slider:
   flutter_rating_bar:
   uuid: ^3.0.6
-
+  fl_chart:
 dev_dependencies:
   flutter_test:
     sdk: flutter
