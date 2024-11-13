@@ -88,14 +88,14 @@ class MyApp extends StatelessWidget {
         '/balance': (context) => BalanceScreen(),
 
 
-    '/mybooking': (context) {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-    return MyBookingScreen(userId: user.uid); // Pass user ID
-    } else {
-    return LoginScreen(); // Redirect to login if unauthenticated
-    }
-    },
+        '/mybooking': (context) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+        return MyBookingScreen(userId: user.uid); // Pass user ID
+        } else {
+        return LoginScreen(); // Redirect to login if unauthenticated
+        }
+        },
 
 
 

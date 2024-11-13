@@ -4,6 +4,7 @@ import 'package:home_chef_hub/models/user_complaint_model.dart';
 
 class DatabaseService {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final DatabaseReference _complaintsRef = FirebaseDatabase.instance.ref('complaints');
 
   // Method to generate a unique complaint ID
   String generateComplaintId() {
@@ -38,5 +39,25 @@ class DatabaseService {
   Future<void> updateComplaintStatus(String complaintId, String status) async {
     DatabaseReference complaintRef = _database.ref().child('complaints/$complaintId');
     await complaintRef.update({'status': status});
+  }
+
+  // Method to fetch complaints by user ID
+  Future<List<UserComplaint>> getUserComplaints(String userId) async {
+    List<UserComplaint> userComplaints = [];
+    try {
+      final snapshot = await _complaintsRef.orderByChild('userId').equalTo(userId).once();
+      final data = snapshot.snapshot.value as Map<dynamic, dynamic>?;
+
+      if (data != null) {
+        data.forEach((key, value) {
+          final complaint = UserComplaint.fromMap(Map<String, dynamic>.from(value));
+          userComplaints.add(complaint);
+        });
+      }
+    } catch (error) {
+      print("Error fetching user complaints: $error");
+    }
+
+    return userComplaints;
   }
 }
