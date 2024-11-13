@@ -61,6 +61,14 @@ class ChefHomeScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/change-password');
               },
             ),
+      ListTile(
+        leading: Icon(Icons.book),
+        title: Text('Blog'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/all-blogs');
+        },
+      ),
           ],
         ),
       ),
@@ -88,29 +96,17 @@ class ChefHomeScreen extends StatelessWidget {
             _buildMenuItem(
               context,
               icon: Icons.event,
-              label: 'Active Bookings',
+              label: 'Bookings',
               route: '/chef-my-bookings', // Route to view active bookings
               color: Colors.blue,
             ),
-            _buildMenuItem(
-              context,
-              icon: Icons.attach_money,
-              label: 'Earnings',
-              route: '/earnings', // Route to view chef's earnings
-              color: Colors.purple,
-            ),
-            _buildMenuItem(
-              context,
-              icon: Icons.schedule,
-              label: 'Booking History',
-              route: '/bookingHistory', // Route to view completed bookings
-              color: Colors.teal,
-            ),
+
+
             _buildMenuItem(
               context,
               icon: Icons.reviews,
-              label: 'Reviews',
-              route: '/reviews', // Route to view customer reviews
+              label: 'write a Blog',
+              route: '/chef-blog', // Route to view customer reviews
               color: Colors.red,
             ),
           ],
