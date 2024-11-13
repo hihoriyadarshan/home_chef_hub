@@ -1,26 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../login_screen.dart';
-import '../profile_screen.dart';
 
 class AdminScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        title: Text('Admin Dashboard',
-            style: TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-            )),
+        title: Text(
+          'Admin Dashboard',
+          style: TextStyle(fontSize: 22, color: Colors.white),
+        ),
         backgroundColor: Color(0xFFD32F2F),
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
-              await FirebaseAuth.instance.signOut(); // Sign out from Firebase
-              Navigator.pushReplacementNamed(context, '/login'); // Use named route for login screen
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, '/login');
             },
           ),
         ],
@@ -30,154 +26,33 @@ class AdminScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color(0xFFD32F2F),
-              ),
+              decoration: BoxDecoration(color: Color(0xFFD32F2F)),
               child: Text(
                 'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.analytics),
-              title: Text('DashBoard'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushReplacementNamed(context, '/Admin-dashboard'); // Use named route for Admin Dashboard
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.people),
-              title: Text('Manage user'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/manage-user'); // Use named route for Manage Users
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.restaurant_menu),
-              title: Text('Manage Chef'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/manage-chef'); // Use named route for Manage Chefs
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.dining),
-              title: Text('Create Category'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/create-category'); // Use named route for Create Category
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.fastfood),
-              title: Text('Create Sub-Category'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/create-sub_category'); // Use named route for Create Sub-Category
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.dining),
-              title: Text('Manage Category'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/manage-category'); // Use named route for Manage Category
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.fastfood),
-              title: Text('Manage Sub-Category'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/manage-sub_category'); // Use named route for Manage Sub-Category
-              },
-            ),
-
-
-
-            ListTile(
-              leading: Icon(Icons.lunch_dining),
-              title: Text('View All Dishes'),
-              onTap: () {
-                // Navigate to Settings screen (no named route defined yet)
-              },
-            ),
-
-
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('All User Booking Details'),
-              onTap: () {
-                // Navigate to Settings screen (no named route defined yet)
-              },
-            ),
-
-
-            ListTile(
-              leading: Icon(Icons.warning),
-              title: Text('Complaint'),
-              onTap: () {
-                // Navigate to Settings screen (no named route defined yet)
-              },
-            ),
-
-
-            ListTile(
-              leading: Icon(Icons.contact_support),
-              title: Text('Contact Us'),
-              onTap: () {
-                // Navigate to Settings screen (no named route defined yet)
-              },
-            ),
-
-            ListTile(
-              leading: Icon(Icons.feedback_outlined),
-              title: Text('Feedback'),
-              onTap: () {
-                // Navigate to Settings screen (no named route defined yet)
-              },
-            ),
-
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushNamed(context, '/profile'); // Use named route for Profile
-              },
-            ),
-
-
-            ListTile(
-              leading: Icon(Icons.password),
-              title: Text('Change Password'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/change-password');
-              },
-            ),
-
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                // Navigate to Settings screen (no named route defined yet)
-              },
-            ),
-
-
-
+            _buildDrawerItem(context, Icons.analytics, 'DashBoard', '/Admin-dashboard'),
+            _buildDrawerItem(context, Icons.people, 'Manage user', '/manage-user'),
+            _buildDrawerItem(context, Icons.restaurant_menu, 'Manage Chef', '/manage-chef'),
+            _buildDrawerItem(context, Icons.dining, 'Create Category', '/create-category'),
+            _buildDrawerItem(context, Icons.fastfood, 'Create Sub-Category', '/create-sub_category'),
+            _buildDrawerItem(context, Icons.dining, 'Manage Category', '/manage-category'),
+            _buildDrawerItem(context, Icons.fastfood, 'Manage Sub-Category', '/manage-sub_category'),
+            _buildDrawerItem(context, Icons.lunch_dining, 'View All Dishes', '/manage-dishes'),
+            _buildDrawerItem(context, Icons.receipt_long, 'All User Booking Details', '/admin-booking-details'),
+            _buildDrawerItem(context, Icons.warning, 'Complaint', '/admin-users-issue'),
+            _buildDrawerItem(context, Icons.contact_support, 'Contact Us', '/Admin-contact'),
+            _buildDrawerItem(context, Icons.feedback_outlined, 'Feedback', '/admin-booking-details'),
+            _buildDrawerItem(context, Icons.person, 'Profile', '/profile'),
+            _buildDrawerItem(context, Icons.password, 'Change Password', '/change-password'),
+            _buildDrawerItem(context, Icons.settings, 'Settings', ''),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () async {
-                await FirebaseAuth.instance.signOut(); // Sign out from Firebase
-                Navigator.pushReplacementNamed(context, '/login'); // Use named route for login screen
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(context, '/login');
               },
             ),
           ],
@@ -190,11 +65,7 @@ class AdminScreen extends StatelessWidget {
           children: [
             Text(
               'Welcome, Admin',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
             SizedBox(height: 20),
             Expanded(
@@ -203,101 +74,42 @@ class AdminScreen extends StatelessWidget {
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
                 children: [
-
-                  _buildDashboardItem(
-                    context,
-                    title: 'Manage Users',
-                    icon: Icons.people,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/manage-user'); // Named route for Manage Users
-                    },
-                  ),
-                  _buildDashboardItem(
-                    context,
-                    title: 'Manage Chefs',
-                    icon: Icons.restaurant_menu,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/manage-chef'); // Named route for Manage Chefs
-                    },
-                  ),
-                  _buildDashboardItem(
-                    context,
-                    title: 'Create Category',
-                    icon: Icons.dining,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/create-category'); // Named route for Create Category
-                    },
-                  ),
-                  _buildDashboardItem(
-                    context,
-                    title: 'Create Sub-Category',
-                    icon: Icons.fastfood,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/create-sub_category'); // Named route for Create Sub-Category
-                    },
-                  ),
-                  _buildDashboardItem(
-                    context,
-                    title: 'Manage Category',
-                    icon: Icons.dining,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/manage-category'); // Named route for Manage Category
-                    },
-                  ),
-                  _buildDashboardItem(
-                    context,
-                    title: 'Manage Sub-Category',
-                    icon: Icons.fastfood,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/manage-sub_category'); // Named route for Manage Sub-Category
-                    },
-                  ),
-
-                  _buildDashboardItem(
-                    context,
-                    title: 'View All Dishes',
-                    icon: Icons.lunch_dining,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/manage-dishes');
-                    },
-                  ),
-
-                  _buildDashboardItem(
-                    context,
-                    title: 'All user Booking Details',
-                    icon: Icons.receipt_long,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/admin-booking-details'); // Named route for Manage Users
-                    },
-                  ),
-
-                  _buildDashboardItem(
-                    context,
-                    title: 'Complant',
-                    icon: Icons.warning,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/admin-users-issue'); // Named route for Manage Users
-                    },
-                  ),
-
-                  _buildDashboardItem(
-                    context,
-                    title: 'Contact Us',
-                    icon: Icons.contact_support,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/Admin-contact'); // Named route for Manage Users
-                    },
-                  ),
-
-                  _buildDashboardItem(
-                    context,
-                    title: 'Feedback',
-                    icon: Icons.feedback_outlined,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/admin-booking-details'); // Named route for Manage Users
-                    },
-                  ),
-
+                  _buildDashboardItem(context, title: 'Manage Users', icon: Icons.people, onTap: () {
+                    Navigator.pushNamed(context, '/manage-user');
+                  }),
+                  _buildDashboardItem(context, title: 'Manage Chefs', icon: Icons.restaurant_menu, onTap: () {
+                    Navigator.pushNamed(context, '/manage-chef');
+                  }),
+                  _buildDashboardItem(context, title: 'Create Category', icon: Icons.dining, onTap: () {
+                    Navigator.pushNamed(context, '/create-category');
+                  }),
+                  _buildDashboardItem(context, title: 'Create Sub-Category', icon: Icons.fastfood, onTap: () {
+                    Navigator.pushNamed(context, '/create-sub_category');
+                  }),
+                  _buildDashboardItem(context, title: 'Manage Category', icon: Icons.dining, onTap: () {
+                    Navigator.pushNamed(context, '/manage-category');
+                  }),
+                  _buildDashboardItem(context, title: 'Manage Sub-Category', icon: Icons.fastfood, onTap: () {
+                    Navigator.pushNamed(context, '/manage-sub_category');
+                  }),
+                  _buildDashboardItem(context, title: 'View All Dishes', icon: Icons.lunch_dining, onTap: () {
+                    Navigator.pushNamed(context, '/manage-dishes');
+                  }),
+                  _buildDashboardItem(context, title: 'All user Booking Details', icon: Icons.receipt_long, onTap: () {
+                    Navigator.pushNamed(context, '/admin-booking-details');
+                  }),
+                  _buildDashboardItem(context, title: 'Complaint', icon: Icons.warning, onTap: () {
+                    Navigator.pushNamed(context, '/admin-users-issue');
+                  }),
+                  _buildDashboardItem(context, title: 'Contact Us', icon: Icons.contact_support, onTap: () {
+                    Navigator.pushNamed(context, '/Admin-contact');
+                  }),
+                  _buildDashboardItem(context, title: 'Feedback', icon: Icons.feedback_outlined, onTap: () {
+                    Navigator.pushNamed(context, '/admin-booking-details');
+                  }),
+                  _buildDashboardItem(context, title: 'Analytics', icon: Icons.show_chart, onTap: () {
+                    Navigator.pushNamed(context, '/analytics');
+                  }),
                 ],
               ),
             ),
@@ -315,35 +127,33 @@ class AdminScreen extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 3,
-              blurRadius: 7,
-              offset: Offset(0, 3),
-            ),
+            BoxShadow(color: Colors.grey.withOpacity(0.3), spreadRadius: 3, blurRadius: 7, offset: Offset(0, 3)),
           ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 50,
-              color: Colors.redAccent,
-            ),
+            Icon(icon, size: 50, color: Colors.redAccent),
             SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(BuildContext context, IconData icon, String title, String route) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: () {
+        Navigator.pop(context);
+        if (route.isNotEmpty) Navigator.pushNamed(context, route);
+      },
     );
   }
 }

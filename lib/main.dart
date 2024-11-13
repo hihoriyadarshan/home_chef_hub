@@ -29,6 +29,7 @@ import './screens/Admin/manage-subcategory_screen.dart';
 import './screens/user/show_dish_details.dart';
 import './screens/change_password_screen.dart';
 import './screens/user/balance_screen.dart';
+import './screens/Admin/analytics_screen.dart';
 // import './screens/user/help_faq_screen.dart';
 // import './screens/Admin/admin_booking_details.dart';
 // import 'screens/Admin/admin_users_issue.dart';
@@ -86,6 +87,7 @@ class MyApp extends StatelessWidget {
         '/blog': (context) => BlogScreen(),
         '/Admin-contact': (context) => AdminContactUsScreen(),
         '/balance': (context) => BalanceScreen(),
+        '/analytics': (context) => AnalyticsScreen(),
 
 
     '/mybooking': (context) {
