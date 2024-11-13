@@ -37,7 +37,7 @@ class BookingModel {
       dishId: map['dishId'],
       bookingDate: DateTime.parse(map['bookingDate']),
       status: map['status'],
-      totalAmount: map['totalAmount'],
+      totalAmount: (map['totalAmount'] as num).toDouble(),
     );
   }
 }

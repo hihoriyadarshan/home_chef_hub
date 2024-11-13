@@ -1,5 +1,5 @@
 class UserModel {
-  final String uid;
+  final String uid; // user id chef id both are same
   final String username;
   final String email;
   final String dob;

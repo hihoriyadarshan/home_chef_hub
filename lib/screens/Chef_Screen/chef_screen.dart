@@ -89,7 +89,7 @@ class ChefHomeScreen extends StatelessWidget {
               context,
               icon: Icons.event,
               label: 'Active Bookings',
-              route: '/activeBookings', // Route to view active bookings
+              route: '/chef-my-bookings', // Route to view active bookings
               color: Colors.blue,
             ),
             _buildMenuItem(
