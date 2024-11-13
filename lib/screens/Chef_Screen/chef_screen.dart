@@ -47,10 +47,10 @@ class ChefHomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.book),
-              title: Text('Blog'),
+              title: Text('Write a Blog'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/blog');
+                Navigator.pushNamed(context, '/chef-blog');
               },
             ),
             ListTile(
@@ -68,6 +68,7 @@ class ChefHomeScreen extends StatelessWidget {
           Navigator.pop(context);
           Navigator.pushNamed(context, '/all-blogs');
         },
+
       ),
           ],
         ),

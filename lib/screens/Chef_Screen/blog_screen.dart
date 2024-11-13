@@ -73,4 +73,8 @@ class BlogScreen extends StatelessWidget {
       ),
     );
   }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

@@ -74,6 +74,10 @@ class AdminScreen extends StatelessWidget {
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
                 children: [
+
+                  _buildDashboardItem(context, title: 'Analytics', icon: Icons.show_chart, onTap: () {
+                    Navigator.pushNamed(context, '/analytics');
+                  }),
                   _buildDashboardItem(context, title: 'Manage Users', icon: Icons.people, onTap: () {
                     Navigator.pushNamed(context, '/manage-user');
                   }),
@@ -107,9 +111,7 @@ class AdminScreen extends StatelessWidget {
                   _buildDashboardItem(context, title: 'Feedback', icon: Icons.feedback_outlined, onTap: () {
                     Navigator.pushNamed(context, '/admin-booking-details');
                   }),
-                  _buildDashboardItem(context, title: 'Analytics', icon: Icons.show_chart, onTap: () {
-                    Navigator.pushNamed(context, '/analytics');
-                  }),
+
                 ],
               ),
             ),
