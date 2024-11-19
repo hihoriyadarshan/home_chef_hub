@@ -11,7 +11,8 @@ class BlogScreen extends StatelessWidget {
         backgroundColor: Colors.red,
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('blogs').orderBy('timestamp', descending: true).snapshots(),
+        stream: FirebaseFirestore.instance.collection('blogs').orderBy(
+            'timestamp', descending: true).snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -19,13 +20,15 @@ class BlogScreen extends StatelessWidget {
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
-              child: Text('No blogs available', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                  'No blogs available', style: TextStyle(color: Colors.grey)),
             );
           }
 
           return ListView(
             children: snapshot.data!.docs.map((doc) {
-              final blog = BlogModel.fromMap(doc.data() as Map<String, dynamic>);
+              final blog = BlogModel.fromMap(
+                  doc.data() as Map<String, dynamic>);
 
               return Card(
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -73,8 +76,5 @@ class BlogScreen extends StatelessWidget {
       ),
     );
   }
-<<<<<<< Updated upstream
+
 }
-=======
-}
->>>>>>> Stashed changes
