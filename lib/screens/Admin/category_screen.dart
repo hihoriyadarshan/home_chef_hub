@@ -142,7 +142,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
             Navigator.pop(context); // Navigates back to the previous screen
           },
         ),
-        title: Text('Create Category',
+        title: Text('Create Cuisine',
             style: TextStyle(
               fontSize: 22,
               color: Colors.white,
@@ -165,7 +165,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
               // Create Category Text
               Text(
-                'CREATE CATEGORY',
+                'CREATE CUISINE',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -174,7 +174,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               SizedBox(height: 10),
 
               // Input Fields
-              _buildTextField(_categoryNameController, 'Category Name'),
+              _buildTextField(_categoryNameController, 'Cuisine Name'),
               SizedBox(height: 20),
 
               // Category Image Picker
@@ -205,7 +205,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               // Create Button
               ElevatedButton(
                 onPressed: createCategory,
-                child: Text('Create Category',
+                child: Text('Create Cuisine',
                   style: TextStyle(fontSize: 18,
                       color: Colors.white),
                 ),

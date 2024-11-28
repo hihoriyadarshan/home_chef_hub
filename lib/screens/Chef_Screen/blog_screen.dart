@@ -76,5 +76,9 @@ class BlogScreen extends StatelessWidget {
       ),
     );
   }
+<<<<<<< HEAD
 
 }
+=======
+}
+>>>>>>> 73e95524b59d1feef6ae612efd941d9616610b6a
